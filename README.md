@@ -54,16 +54,16 @@ It appears that the current binary build for MacOS requires at least MacOS 10.15
 
 ## Instructions for compiling:
 
-[Download the newest stable version of Qt directly from qt.io](https://www.qt.io/download/) (You need 5.14.x or newer)
+[Download the newest stable version of Qt directly from qt.io](https://www.qt.io/download/) (You need 5.14.x or newer (tested with 6.9.0))
 
 ```sh
 cd ~
 
-git clone https://github.com/collin80/SavvyCAN.git
+git clone https://github.com/fasttube/SavvyCAN.git
 
 cd SavvyCAN
 
-~/Qt/5.14/gcc_64/bin/qmake
+~/Qt/6.9.0/gcc_64/bin/qmake
 
 make
 ```
