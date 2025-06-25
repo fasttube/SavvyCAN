@@ -218,7 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
     normalRowHeight = ui->canFramesView->rowHeight(0);
     if (normalRowHeight == 0) normalRowHeight = 30; //should not be necessary but provides a sane number if something stupid happened.
     qDebug() << "normal row height = " << normalRowHeight;
-    model->clearFrames();
+    model->clearFrames(true);
 
     ui->canFramesView->verticalHeader()->setDefaultSectionSize(normalRowHeight);    // Set the default height for all rows to the height that was calculated
 

@@ -42,7 +42,7 @@ public:
     void sendRefresh();
     void sendRefresh(int);
     int  sendBulkRefresh();
-    void clearFrames();
+    void clearFrames(bool forceClearFilters = false);
     void setInterpretMode(bool);
     bool getInterpretMode();
     void setOverwriteMode(bool);

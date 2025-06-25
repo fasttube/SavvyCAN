@@ -241,6 +241,9 @@
           <property name="text">
            <string>Keep Filters When Clearing</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -253,6 +256,9 @@
         <item>
          <widget class="QCheckBox" name="cbOverwrite">
           <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
            <bool>true</bool>
           </property>
           <property name="text">
@@ -271,6 +277,9 @@
          <widget class="QCheckBox" name="cbInterpret">
           <property name="text">
            <string>Interpret Frames</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
