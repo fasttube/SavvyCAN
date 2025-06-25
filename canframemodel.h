@@ -43,6 +43,7 @@ public:
     void sendRefresh(int);
     int  sendBulkRefresh();
     void clearFrames(bool forceClearFilters = false);
+    void resetFilteredFrames();
     void setInterpretMode(bool);
     bool getInterpretMode();
     void setOverwriteMode(bool);

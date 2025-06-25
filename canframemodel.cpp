@@ -872,6 +872,11 @@ void CANFrameModel::clearFrames(bool forceClearFilters)
     emit updatedFiltersList();
 }
 
+void CANFrameModel::resetFilteredFrames() {
+    filteredFrames.clear();
+    filteredFrames.append(frames);
+}
+
 /*
  * Since the getListReference function returns readonly
  * you can't insert frames with it. Instead this function
