@@ -111,7 +111,7 @@ GraphingWindow::GraphingWindow(const QVector<CANFrame> *frames, QWidget *parent)
     }
 
     needScaleSetup = true;
-    followGraphEnd = false;
+    followGraphEnd = true;
 }
 
 GraphingWindow::~GraphingWindow()
