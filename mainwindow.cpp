@@ -923,6 +923,7 @@ void MainWindow::overwriteToggled(bool state)
     else
     {
         rowExpansionActive = false;
+        model->resetFilteredFrames();
         model->setOverwriteMode(false);
     }
 }
