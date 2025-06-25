@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCAN_Bridge, &QAction::triggered, this, &MainWindow::showCANBridgeWindow);
 
     //handlers fror interactions with the main can frame view table
-    connect(ui->canFramesView, &QAbstractItemView::clicked, this, &MainWindow::gridClicked);
+    connect(ui->canFramesView, &QAbstractItemView::pressed, this, &MainWindow::gridClicked);
     connect(ui->canFramesView, &QAbstractItemView::doubleClicked, this, &MainWindow::gridDoubleClicked);
     ui->canFramesView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -728,6 +728,10 @@ void MainWindow::collapseAllRows()
 
 void MainWindow::gridClicked(QModelIndex idx)
 {
+    // do not expand or collapse row if a modifier key is pressed to be able to use the right click menu
+    if (QApplication::keyboardModifiers() != Qt::NoModifier) {
+        return;
+    }
     //qDebug() << "Grid Clicked";
     if (ui->canFramesView->rowHeight(idx.row()) > normalRowHeight)
     {
