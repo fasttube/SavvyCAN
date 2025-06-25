@@ -74,9 +74,9 @@ CANFrameModel::CANFrameModel(QObject *parent)
     filteredFrames.reserve(preallocSize);
 
     dbcHandler = DBCHandler::getReference();
-    interpretFrames = false;
-    overwriteDups = false;
-    filtersPersistDuringClear = false;
+    interpretFrames = true;
+    overwriteDups = true;
+    filtersPersistDuringClear = true;
     useHexMode = true;
     useColorsByCanId = false;
     timeStyle = TS_MICROS;
@@ -870,13 +870,13 @@ int CANFrameModel::sendBulkRefresh()
     return num;
 }
 
-void CANFrameModel::clearFrames()
+void CANFrameModel::clearFrames(bool forceClearFilters)
 {
     mutex.lock();
     this->beginResetModel();
     frames.clear();
     filteredFrames.clear();
-    if(filtersPersistDuringClear == false)
+    if(filtersPersistDuringClear == false || forceClearFilters)
     {
         filters.clear();
         busFilters.clear();
