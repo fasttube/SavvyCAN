@@ -1225,7 +1225,7 @@ void GraphingWindow::showParamsDialog(int idx = -1)
         //create a new graph with the returned parameters.
         GraphParams params;
         thisDialog->getParams(params);
-        createGraph(params);
+        createGraph(params, true, false);
     }
     delete thisDialog;
 }
@@ -1322,7 +1322,7 @@ void GraphingWindow::appendToGraph(GraphParams &params, CANFrame &frame, QVector
     }
 }
 
-void GraphingWindow::createGraph(GraphParams &params, bool createGraphParam)
+void GraphingWindow::createGraph(GraphParams &params, bool createGraphParam, bool recalcY)
 {
     int64_t tempVal; //64 bit temp value.
     double yminval=10000000.0, ymaxval = -1000000.0;
@@ -1561,8 +1561,10 @@ void GraphingWindow::createGraph(GraphParams &params, bool createGraphParam)
         ui->graphingView->xAxis->setRange(xminval, xmaxval);        
         ui->graphingView->axisRect()->setupFullAxesBox();
     }
-    //always recalculate Y range so that new graphs actually show up in view
-    ui->graphingView->yAxis->setRange(yminval, ymaxval);
+    //almost always recalculate Y range so that new graphs actually show up in view
+    if (recalcY) {
+        ui->graphingView->yAxis->setRange(yminval, ymaxval);
+    }
 
     ui->graphingView->replot();
 }
