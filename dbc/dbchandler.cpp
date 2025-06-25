@@ -13,6 +13,7 @@
 #include <QJsonObject>
 #include "utility.h"
 #include "connections/canconmanager.h"
+#include <algorithm>
 
 DBCHandler* DBCHandler::instance = nullptr;
 
@@ -64,6 +65,17 @@ bool DBCSignalHandler::addSignal(DBC_SIGNAL &sig)
 {
     sigs.append(sig);
     return true;
+}
+
+bool signal_cmp(DBC_SIGNAL *a, DBC_SIGNAL *b) {
+    return a->startBit < b->startBit;
+}
+
+QList<DBC_SIGNAL*> DBCSignalHandler::getSignalsAsList()
+{
+    QList<DBC_SIGNAL*> sig_list = sigs.values();
+    std::sort(sig_list.begin(), sig_list.end(), signal_cmp);
+    return sig_list;
 }
 
 bool DBCSignalHandler::removeSignal(DBC_SIGNAL *sig)
