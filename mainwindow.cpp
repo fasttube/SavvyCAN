@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     proxyModel->setSourceModel(model);
 
     ui->canFramesView->setModel(proxyModel);
+    ui->canFramesView->setSelectionMode(QAbstractItemView::NoSelection);
 
     settingsDialog = new MainSettingsDialog(); //instantiate the settings dialog so it can initialize settings if this is the first run or the config file was deleted.
     settingsDialog->updateSettings(); //write out all the settings. If this is the first run it'll write defaults out.
@@ -728,8 +729,8 @@ void MainWindow::collapseAllRows()
 
 void MainWindow::gridClicked(QModelIndex idx)
 {
-    // do not expand or collapse row if a modifier key is pressed to be able to use the right click menu
-    if (QApplication::keyboardModifiers() != Qt::NoModifier) {
+    // do not expand or collapse row if press was a right mouse button press to be able to use the right click menu
+    if (QApplication::mouseButtons() & Qt::RightButton) {
         return;
     }
     //qDebug() << "Grid Clicked";
