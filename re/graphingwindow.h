@@ -56,7 +56,7 @@ public:
     void showEvent(QShowEvent*);
 
 public slots:
-    void createGraph(GraphParams &params, bool createGraphParam = true);
+    void createGraph(GraphParams &params, bool createGraphParam = true, bool recalcY = true);
 
 private slots:
     void titleDoubleClick(QMouseEvent *event, QCPTextElement *title);
