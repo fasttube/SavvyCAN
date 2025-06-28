@@ -461,6 +461,9 @@
    <property name="text">
     <string>Playback</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="action_Custom">
    <property name="text">
@@ -481,6 +484,9 @@
    <property name="text">
     <string>New Graphing Window</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
   </action>
   <action name="actionOpen_Log_File">
    <property name="text">
@@ -493,6 +499,9 @@
   <action name="actionSave_Log_File">
    <property name="text">
     <string>Save Log File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionFrame_Data_Analysis">
@@ -534,6 +543,9 @@
    <property name="text">
     <string>Preferences</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
   </action>
   <action name="actionSave_Filtered_Log_File">
    <property name="text">
@@ -559,6 +571,9 @@
    <property name="text">
     <string>Open Connection Window</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
   </action>
   <action name="actionConnect">
    <property name="text">
@@ -583,6 +598,9 @@
   <action name="actionDBC_File_Manager">
    <property name="text">
     <string>DBC File Manager</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
   <action name="actionFuzzing">

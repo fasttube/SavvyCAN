@@ -9,6 +9,9 @@
 #include <algorithm>
 #include <limits>
 
+#define MOVE_FACTOR (1.0 / 2.0)
+#define MOVE_FACTOR_FINE (1.0 / 10.0)
+
 GraphingWindow::GraphingWindow(const QVector<CANFrame> *frames, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GraphingWindow)
@@ -112,6 +115,8 @@ GraphingWindow::GraphingWindow(const QVector<CANFrame> *frames, QWidget *parent)
 
     needScaleSetup = true;
     followGraphEnd = true;
+    xPressed = false;
+    yPressed = false;
 }
 
 GraphingWindow::~GraphingWindow()
@@ -465,15 +470,46 @@ void GraphingWindow::mouseWheel()
 
 bool GraphingWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::KeyRelease) {
+    if (event->type() == QEvent::KeyRelease || event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         switch (keyEvent->key())
         {
+        case Qt::Key_X:
+            xPressed = event->type() == QEvent::KeyPress;
+            break;
+        case Qt::Key_Y:
+            yPressed = event->type() == QEvent::KeyPress;
+            break;
+        }
+        if (event->type() != QEvent::KeyRelease)
+        {
+            return true;
+        }
+
+        switch (keyEvent->key())
+        {
         case Qt::Key_Plus:
+        case Qt::Key_PageUp:
             zoomIn();
             break;
         case Qt::Key_Minus:
+        case Qt::Key_PageDown:
             zoomOut();
+            break;
+        case Qt::Key_Up:
+            moveUp(QApplication::keyboardModifiers() == Qt::ShiftModifier);
+            break;
+        case Qt::Key_Down:
+            moveDown(QApplication::keyboardModifiers() == Qt::ShiftModifier);
+            break;
+        case Qt::Key_Left:
+            moveLeft(QApplication::keyboardModifiers() == Qt::ShiftModifier);
+            break;
+        case Qt::Key_Right:
+            moveRight(QApplication::keyboardModifiers() == Qt::ShiftModifier);
+            break;
+        case Qt::Key_F:
+            toggleFollowMode();
             break;
         case Qt::Key_F1:
             HelpWindow::getRef()->showHelp("graphwindow.md");
@@ -526,12 +562,12 @@ void GraphingWindow::zoomIn()
 {
     QCPRange xrange = ui->graphingView->xAxis->range();
     QCPRange yrange = ui->graphingView->yAxis->range();
-    if (ui->graphingView->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    if (ui->graphingView->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || xPressed)
     {
         ui->graphingView->xAxis->scaleRange(0.666, xrange.center());
     }
 
-    else if (ui->graphingView->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    else if (ui->graphingView->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || yPressed)
     {
         ui->graphingView->yAxis->scaleRange(0.666, yrange.center());
     }
@@ -547,12 +583,12 @@ void GraphingWindow::zoomOut()
 {
     QCPRange xrange = ui->graphingView->xAxis->range();
     QCPRange yrange = ui->graphingView->yAxis->range();
-    if (ui->graphingView->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    if (ui->graphingView->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || xPressed)
     {
         ui->graphingView->xAxis->scaleRange(1.5, xrange.center());
     }
 
-    else if (ui->graphingView->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    else if (ui->graphingView->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || yPressed)
     {
         ui->graphingView->yAxis->scaleRange(1.5, yrange.center());
     }
@@ -563,6 +599,47 @@ void GraphingWindow::zoomOut()
     }
     ui->graphingView->replot();
 }
+
+void GraphingWindow::moveUp(bool fine)
+{
+    QCPRange range = ui->graphingView->yAxis->range();
+    double diff = (range.upper - range.lower);
+    if (fine) diff *= MOVE_FACTOR_FINE;
+    else diff *= MOVE_FACTOR;
+    ui->graphingView->yAxis->moveRange(diff);
+    ui->graphingView->replot();
+}
+
+void GraphingWindow::moveDown(bool fine)
+{
+    QCPRange range = ui->graphingView->yAxis->range();
+    double diff = (range.upper - range.lower);
+    if (fine) diff *= MOVE_FACTOR_FINE;
+    else diff *= MOVE_FACTOR;
+    ui->graphingView->yAxis->moveRange(-diff);
+    ui->graphingView->replot();
+}
+
+void GraphingWindow::moveLeft(bool fine)
+{
+    QCPRange range = ui->graphingView->xAxis->range();
+    double diff = (range.upper - range.lower);
+    if (fine) diff *= MOVE_FACTOR_FINE;
+    else diff *= MOVE_FACTOR;
+    ui->graphingView->xAxis->moveRange(-diff);
+    ui->graphingView->replot();
+}
+
+void GraphingWindow::moveRight(bool fine)
+{
+    QCPRange range = ui->graphingView->xAxis->range();
+    double diff = (range.upper - range.lower);
+    if (fine) diff *= MOVE_FACTOR_FINE;
+    else diff *= MOVE_FACTOR;
+    ui->graphingView->xAxis->moveRange(diff);
+    ui->graphingView->replot();
+}
+
 
 void GraphingWindow::removeSelectedGraph()
 {
@@ -671,7 +748,8 @@ void GraphingWindow::contextMenuRequest(QPoint pos)
     menu->addAction(tr("Save graph definitions to file"), this, SLOT(saveDefinitions()));
     menu->addAction(tr("Load graph definitions from file"), this, SLOT(loadDefinitions()));
     menu->addAction(tr("Save spreadsheet of data"), this, SLOT(saveSpreadsheet()));
-    QAction *act = menu->addAction(tr("Follow end of graph"), this, SLOT(toggleFollowMode()));
+    QKeySequence followShortcut = QKeySequence("F");
+    QAction *act = menu->addAction(tr("Follow end of graph"), this, SLOT(toggleFollowMode()), followShortcut);
     act->setCheckable(true);
     act->setChecked(followGraphEnd);
     menu->addAction(tr("Add new graph"), this, SLOT(addNewGraph()));
