@@ -279,9 +279,16 @@ void GraphingWindow::plottableDoubleClick(QCPAbstractPlottable* plottable, int d
     int id = 0;
     //apply transforms to get the X axis value where we double clicked
     double coord = plottable->keyAxis()->pixelToCoord(event->position().x());
+    // convert coord to seconds
+    if (Utility::timeStyle == TS_MICROS)
+        coord /= 1000000;
+    else if (Utility::timeStyle == TS_MILLIS)
+        coord /= 1000;
+    else if (Utility::timeStyle == TS_CLOCK) // coord is given in seconds but with an offset of one hour
+        coord -= 3600;
+
     id = plottable->property("id").toInt();
-    if (Utility::timeStyle == TS_SECONDS) emit sendCenterTimeID(id, coord);
-    else emit sendCenterTimeID(id, coord / 1000000.0);
+    emit sendCenterTimeID(id, coord);
 
     double x, y;
     QCPGraph *graph = reinterpret_cast<QCPGraph *>(plottable);
@@ -311,7 +318,13 @@ void GraphingWindow::gotCenterTimeID(uint32_t ID, double timestamp)
 
     QCPRange range = ui->graphingView->xAxis->range();
     double offset = range.size() / 2.0;
-    if (Utility::timeStyle != TS_SECONDS) timestamp *= 1000000.0; //timestamp is always in seconds when being passed so convert if necessary
+    // timestamp is always givin in seconds
+    if (Utility::timeStyle == TS_MICROS)
+        timestamp *= 1000000;
+    else if (Utility::timeStyle == TS_MILLIS)
+        timestamp *= 1000;
+    else if (Utility::timeStyle == TS_CLOCK)
+        timestamp += 3600;  // offset of one hour needed
     ui->graphingView->xAxis->setRange(timestamp - offset, timestamp + offset);
     ui->graphingView->replot();
 }
