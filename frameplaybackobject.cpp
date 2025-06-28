@@ -11,7 +11,7 @@ FramePlaybackObject::FramePlaybackObject()
     numBuses = 0;
     playbackActive = false;
     playbackForward = true;
-    useOrigTiming = false;
+    useOrigTiming = true;
     whichBusSend = 0;
     currentSeqItem = nullptr;
 }
@@ -395,7 +395,7 @@ void FramePlaybackObject::timerTriggered()
         statusCounter += playbackInterval;
     }
 
-    if (statusCounter > 249)
+    if (statusCounter > 100)
     {
         statusCounter = 0;
         emit statusUpdate(currentPosition);

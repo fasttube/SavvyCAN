@@ -105,6 +105,9 @@
      <property name="text">
       <string>Use original frame timing from captured frames</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
@@ -136,6 +139,9 @@
          <property name="value">
           <number>5</number>
          </property>
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
         </widget>
        </item>
       </layout>
@@ -159,6 +165,9 @@
          </property>
          <property name="value">
           <number>1</number>
+         </property>
+         <property name="enabled">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
