@@ -54,6 +54,7 @@ public slots:
     void stepPlaybackBackward();
     void stopPlayback();
     void pausePlayback();
+    void seekPlayback(double timestamp);
 
     void setSequenceObject(SequenceItem *item);
     void setUseOriginalTiming(bool state);

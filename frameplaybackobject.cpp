@@ -1,4 +1,5 @@
 #include "frameplaybackobject.h"
+#include <algorithm>
 
 FramePlaybackObject::FramePlaybackObject()
 {
@@ -288,6 +289,47 @@ void FramePlaybackObject::pausePlayback()
     playbackActive = false;
     playbackTimer->stop();
     emit statusUpdate(currentPosition);
+}
+
+void FramePlaybackObject::seekPlayback(double timestamp)
+{
+    if (currentSeqItem == NULL)
+        return;
+
+    /* make sure we execute in mThread context */
+    if (mThread_p && (mThread_p != QThread::currentThread()))
+    {
+        QMetaObject::invokeMethod(this, "seekPlayback", Qt::BlockingQueuedConnection, timestamp);
+        return;
+    }
+
+    // playbackTimer->stop();
+    // playbackActive = false;
+
+    timestamp *= 1000000; // convert to us
+
+    size_t lowIdx = 0;
+    size_t highIdx = currentSeqItem->data.count() - 1;
+
+    while (lowIdx < highIdx)
+    {
+        int midIdx = lowIdx + (highIdx - lowIdx) / 2;
+
+        CANFrame midFrame = currentSeqItem->data[midIdx];
+        if (midFrame.timeStamp().seconds() * 1000000 + midFrame.timeStamp().microSeconds() < timestamp)
+        {
+            lowIdx = midIdx + 1;
+        }
+        else
+        {
+            highIdx = midIdx - 1;
+        }
+    }
+
+    currentPosition = lowIdx;
+    emit statusUpdate(currentPosition);
+
+    startPlaybackForward();
 }
 
 void FramePlaybackObject::setSequenceObject(SequenceItem *item)

@@ -42,9 +42,13 @@ private slots:
     void saveFilters();
     void loadFilters();
     void useOrigTimingClicked();
+    void gotCenterTimeID(uint32_t ID, double timestamp);
     void getStatusUpdate(int frameNum);
     void EndOfFrameCache();
     void updatedFrames(int);
+
+signals:
+    void sendCurrentTimestamp(double timestamp);
 
 private:
     Ui::FramePlaybackWindow *ui;

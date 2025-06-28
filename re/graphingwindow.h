@@ -84,6 +84,7 @@ private slots:
     void editSelectedGraph();
     void updatedFrames(int);
     void gotCenterTimeID(uint32_t ID, double timestamp);
+    void gotPlaybackTimestamp(double timestamp);
     void resetView();
     void zoomIn();
     void zoomOut();
@@ -105,6 +106,8 @@ private:
     QCPSelectionDecorator *selDecorator;
     QCPItemText *locationText;
     QCPItemTracer *itemTracer;
+    QPen playbackPen;
+    QCPItemStraightLine *playbackLine;
     bool needScaleSetup; //do we need to set x,y graphing extents?
     bool useOpenGL;
     bool followGraphEnd;
