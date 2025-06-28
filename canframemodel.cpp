@@ -468,8 +468,9 @@ QVariant CANFrameModel::data(const QModelIndex &index, int role) const
             //Reformatting the output a bit with custom code
             if (overwriteDups)
             {
-                if (timeStyle == TS_SECONDS) return QString::number(thisFrame.timedelta / 1000000.0, 'f', 5);
-                return QString::number(thisFrame.timedelta);
+                // if (timeStyle == TS_SECONDS) return QString::number(thisFrame.timedelta / 1000000.0, 'f', 5);
+                // if (timeStyle == TS_MICROS) return QString::number(thisFrame.timedelta);
+                return QString::number(thisFrame.timedelta / 1000.0, 'f', 5);
             }
             else ts = Utility::formatTimestamp(thisFrame.timeStamp().microSeconds());
             if (ts.typeId() == QMetaType::Double) return QString::number(ts.toDouble(), 'f', 5); //never scientific notation, 5 decimal places
