@@ -1623,6 +1623,11 @@ void MainWindow::showGraphingWindow()
         connect(lastGraphingWindow, SIGNAL(sendCenterTimeID(uint32_t,double)), flowViewWindow, SLOT(gotCenterTimeID(uint32_t,double)));
         connect(flowViewWindow, SIGNAL(sendCenterTimeID(uint32_t,double)), lastGraphingWindow, SLOT(gotCenterTimeID(uint32_t,double)));
     }
+    if (playbackWindow)
+    {
+        connect(lastGraphingWindow, SIGNAL(sendCenterTimeID(uint32_t,double)), playbackWindow, SLOT(gotCenterTimeID(uint32_t,double)));
+        connect(playbackWindow, SIGNAL(sendCurrentTimestamp(double)), lastGraphingWindow, SLOT(gotPlaybackTimestamp(double)));
+    }
 
     lastGraphingWindow->show();
 }
@@ -1725,6 +1730,13 @@ void MainWindow::showPlaybackWindow()
             playbackWindow = new FramePlaybackWindow(model->getListReference());
         else
             playbackWindow = new FramePlaybackWindow(model->getFilteredListReference());
+
+        connect(this, SIGNAL(sendCenterTimeID(uint32_t, double)), playbackWindow, SLOT(gotCenterTimeID(uint32_t, double)));
+        for (auto &&graphWindow : graphWindows)
+        {
+            connect(graphWindow, SIGNAL(sendCenterTimeID(uint32_t, double)), playbackWindow, SLOT(gotCenterTimeID(uint32_t, double)));
+            connect(playbackWindow, SIGNAL(sendCurrentTimestamp(double)), graphWindow, SLOT(gotPlaybackTimestamp(double)));
+        }
     }
     playbackWindow->show();
 }

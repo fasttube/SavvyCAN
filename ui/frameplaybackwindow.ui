@@ -227,6 +227,13 @@
          </property>
         </widget>
        </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="timePosition">
+         <property name="text">
+          <string>x of y</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>

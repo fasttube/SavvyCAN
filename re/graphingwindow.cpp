@@ -69,6 +69,13 @@ GraphingWindow::GraphingWindow(const QVector<CANFrame> *frames, QWidget *parent)
     itemTracer->setStyle(QCPItemTracer::tsCircle);
     itemTracer->setSize(20);
 
+    playbackPen.setWidth(1);
+    playbackPen.setColor(Qt::red);
+    playbackLine = new QCPItemStraightLine(ui->graphingView);
+    playbackLine->setSelectable(false);
+    playbackLine->setPen(playbackPen);
+    playbackLine->setVisible(false);
+
     // connect slot that ties some axis selections together (especially opposite axes):
     connect(ui->graphingView, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
     //connect up the mouse controls
@@ -326,6 +333,28 @@ void GraphingWindow::gotCenterTimeID(uint32_t ID, double timestamp)
     else if (Utility::timeStyle == TS_CLOCK)
         timestamp += 3600;  // offset of one hour needed
     ui->graphingView->xAxis->setRange(timestamp - offset, timestamp + offset);
+    ui->graphingView->replot();
+}
+
+void GraphingWindow::gotPlaybackTimestamp(double timestamp)
+{
+    if (timestamp == INFINITY) {
+        playbackLine->setVisible(false);
+        return;
+    }
+    playbackLine->setVisible(true);
+    
+    // timestamp is always givin in seconds
+    if (Utility::timeStyle == TS_MICROS)
+        timestamp *= 1000000;
+    else if (Utility::timeStyle == TS_MILLIS)
+        timestamp *= 1000;
+    else if (Utility::timeStyle == TS_CLOCK)
+        timestamp += 3600; // offset of one hour needed
+
+    playbackLine->point1->setCoords(timestamp, 0);
+    playbackLine->point2->setCoords(timestamp, 1);
+
     ui->graphingView->replot();
 }
 
