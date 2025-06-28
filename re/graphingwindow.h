@@ -87,6 +87,10 @@ private slots:
     void resetView();
     void zoomIn();
     void zoomOut();
+    void moveUp(bool fine);
+    void moveDown(bool fine);
+    void moveLeft(bool fine);
+    void moveRight(bool fine);
 
 signals:
     void sendCenterTimeID(uint32_t ID, double timestamp);
@@ -104,6 +108,8 @@ private:
     bool needScaleSetup; //do we need to set x,y graphing extents?
     bool useOpenGL;
     bool followGraphEnd;
+    bool xPressed;
+    bool yPressed;
 
     void showParamsDialog(int idx);
     void closeEvent(QCloseEvent *event);
