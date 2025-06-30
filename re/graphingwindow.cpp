@@ -556,6 +556,8 @@ bool GraphingWindow::eventFilter(QObject *obj, QEvent *event)
         case Qt::Key_F1:
             HelpWindow::getRef()->showHelp("graphwindow.md");
             break;
+        case Qt::Key_Escape:
+            break;
         }
         return true;
     } else if (event->type() == QEvent::TouchBegin)
