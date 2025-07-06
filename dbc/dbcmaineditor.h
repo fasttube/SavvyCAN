@@ -18,6 +18,20 @@ namespace Ui {
 class DBCMainEditor;
 }
 
+class QTreeWidgetSignalItem : public QTreeWidgetItem
+{
+public:
+    using QTreeWidgetItem::QTreeWidgetItem;
+
+    // DBCSignalHandler::getSignalsAsList returns a list sorted by start bit
+    // becuase C++ uses a stable sorting algorithm (also for sorting QTreeWidgetItems) the order is not changed if the comparison function always returns false
+    bool operator<(const QTreeWidgetItem &other) const override
+    {
+        Q_UNUSED(other);
+        return false;
+    }
+};
+
 enum DBCItemTypes
 {
     NODE = 1,
