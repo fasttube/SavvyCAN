@@ -462,7 +462,7 @@ QString DBCMainEditor::createSignalText(DBC_SIGNAL *sig)
 //Signals can have a hierarchial relationship with other signals so this function is separate and calls itself recursively to build the tree
 void DBCMainEditor::processSignalToTree(QTreeWidgetItem *parent, DBC_SIGNAL *sig)
 {
-    QTreeWidgetItem *sigItem = new QTreeWidgetItem(parent);
+    QTreeWidgetSignalItem *sigItem = new QTreeWidgetSignalItem(parent);
     QString sigInfo = createSignalText(sig);
     sigItem->setText(0, sigInfo);
     if (sig->isMultiplexor) sigItem->setIcon(0, multiplexorSignalIcon);
