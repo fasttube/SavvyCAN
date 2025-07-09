@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>SavvyCAN</string>
+   <string>GiesCAN</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">

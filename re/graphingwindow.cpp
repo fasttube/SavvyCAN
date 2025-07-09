@@ -383,7 +383,7 @@ void GraphingWindow::axisDoubleClick(QCPAxis *axis, QCPAxis::SelectablePart part
   if (part == QCPAxis::spAxisLabel) // Set an axis label by double clicking on it
   {
     bool ok;
-    QString newLabel = QInputDialog::getText(this, "SavvyCAN Graphing", "New axis label:", QLineEdit::Normal, axis->label(), &ok);
+    QString newLabel = QInputDialog::getText(this, "GiesCAN Graphing", "New axis label:", QLineEdit::Normal, axis->label(), &ok);
     if (ok)
     {
       axis->setLabel(newLabel);
