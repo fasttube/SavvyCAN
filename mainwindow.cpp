@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     useColorsByCanId = false;
     selfRef = this;
 
-    this->setWindowTitle("Savvy CAN V" + QString::number(VERSION) + " [Built " + QString(__DATE__) +"]");
+    this->setWindowTitle("GiesCAN V" + QString::number(VERSION) + " [Built " + QString(__DATE__) +"]");
 
     model = new CANFrameModel(this); // set parent to mainwindow to prevent canframemodel to change thread (might be done by setModel but just in case)
 
