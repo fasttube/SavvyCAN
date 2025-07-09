@@ -40,7 +40,7 @@ GraphingWindow::GraphingWindow(const QVector<CANFrame> *frames, QWidget *parent)
     if (Utility::timeStyle == TS_SECONDS) ui->graphingView->xAxis->setNumberPrecision(6);
         else ui->graphingView->xAxis->setNumberPrecision(0);
 
-    if (Utility::timeStyle == TS_CLOCK)
+    if (Utility::timeStyle == TS_CLOCK || Utility::timeStyle == TS_START_DATE)
     {
         QSharedPointer timeTicker = QSharedPointer<QCPAxisTickerTime>::create();
         timeTicker->setTimeFormat("%h:%m:%s.%z");
@@ -291,7 +291,7 @@ void GraphingWindow::plottableDoubleClick(QCPAbstractPlottable* plottable, int d
         coord /= 1000000;
     else if (Utility::timeStyle == TS_MILLIS)
         coord /= 1000;
-    else if (Utility::timeStyle == TS_CLOCK) // coord is given in seconds but with an offset of one hour
+    else if (Utility::timeStyle == TS_CLOCK || Utility::timeStyle == TS_START_DATE) // coord is given in seconds but with an offset of one hour
         coord -= 3600;
 
     id = plottable->property("id").toInt();
@@ -330,7 +330,7 @@ void GraphingWindow::gotCenterTimeID(uint32_t ID, double timestamp)
         timestamp *= 1000000;
     else if (Utility::timeStyle == TS_MILLIS)
         timestamp *= 1000;
-    else if (Utility::timeStyle == TS_CLOCK)
+    else if (Utility::timeStyle == TS_CLOCK || Utility::timeStyle == TS_START_DATE)
         timestamp += 3600;  // offset of one hour needed
     ui->graphingView->xAxis->setRange(timestamp - offset, timestamp + offset);
     ui->graphingView->replot();
@@ -349,7 +349,7 @@ void GraphingWindow::gotPlaybackTimestamp(double timestamp)
         timestamp *= 1000000;
     else if (Utility::timeStyle == TS_MILLIS)
         timestamp *= 1000;
-    else if (Utility::timeStyle == TS_CLOCK)
+    else if (Utility::timeStyle == TS_CLOCK || Utility::timeStyle == TS_START_DATE)
         timestamp += 3600; // offset of one hour needed
 
     playbackLine->point1->setCoords(timestamp, 0);
@@ -1375,6 +1375,11 @@ void GraphingWindow::appendToGraph(GraphParams &params, CANFrame &frame, QVector
             QDateTime dt = QDateTime::fromMSecsSinceEpoch((frame.timeStamp().microSeconds() / 1000) - params.xbias);
             xVal = (dt.time().msec()/1000.0 + dt.time().second() + dt.time().minute() * 60 + dt.time().hour() * 3600);
         }
+        else if (Utility::timeStyle == TS_START_DATE)
+        {
+            QDateTime dt = Utility::startDate.addMSecs(frame.timeStamp().microSeconds() / 1000 - params.xbias);
+            xVal = (dt.time().second() + dt.time().minute() * 60 + dt.time().hour() * 3600);
+        }
         else
         {
             xVal = (frame.timeStamp().microSeconds() - params.xbias);
@@ -1529,6 +1534,11 @@ void GraphingWindow::createGraph(GraphParams &params, bool createGraphParam, boo
         else if (Utility::timeStyle == TS_CLOCK)
         {
             QDateTime dt = QDateTime::fromMSecsSinceEpoch((frameCache[k].timeStamp().microSeconds() / 1000) - params.xbias);
+            x = (dt.time().msecsSinceStartOfDay() / 1000.0);
+        }
+        else if (Utility::timeStyle == TS_START_DATE)
+        {
+            QDateTime dt = Utility::startDate.addMSecs(frameCache[k].timeStamp().microSeconds() / 1000 - params.xbias);
             x = (dt.time().msecsSinceStartOfDay() / 1000.0);
         }
         else

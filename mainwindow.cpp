@@ -430,10 +430,18 @@ void MainWindow::readUpdateableSettings()
     tempBool = settings.value("Main/TimeSeconds", false).toBool();
     if (tempBool) ts = TS_SECONDS;
     tempBool = settings.value("Main/TimeClock", false).toBool();
-    if (tempBool) ts = TS_CLOCK;
+    if (tempBool) {
+        if (settings.value("Main/UseStartDate", false).toBool()) {
+            ts = TS_START_DATE;
+        } else {
+            ts = TS_CLOCK;
+        }
+    }
     tempBool = settings.value("Main/TimeMillis", false).toBool();
     if (tempBool) ts = TS_MILLIS;
     model->setTimeStyle(ts);
+
+    Utility::startDate = QDateTime::fromString(settings.value("Main/StartDate", "2025-01-01T00:00:00.000000").toString(), Qt::ISODateWithMs);
 
     useFiltered = settings.value("Main/UseFiltered", false).toBool();
     model->setTimeFormat(settings.value("Main/TimeFormat", "MMM-dd HH:mm:ss.zzz").toString());
