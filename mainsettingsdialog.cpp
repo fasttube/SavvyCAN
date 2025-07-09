@@ -38,6 +38,7 @@ MainSettingsDialog::MainSettingsDialog(QWidget *parent) :
     ui->cbValidate->setChecked(settings.value("Main/ValidateComm", true).toBool());
     ui->spinPlaybackSpeed->setValue(settings.value("Playback/DefSpeed", 5).toInt());
     ui->lineClockFormat->setText(settings.value("Main/TimeFormat", "MMM-dd HH:mm:ss.zzz").toString());
+    ui->lineStartDate->setText(settings.value("Main/StartDate", "2025-01-01T00:00:00.000000").toString());
     ui->lineRemoteHost->setText(settings.value("Remote/Host", "api.savvycan.com").toString());
     ui->lineRemotePort->setText(settings.value("Remote/Port", "8883").toString()); //default port for SSL enabled MQTT
     ui->lineRemoteUser->setText(settings.value("Remote/User", "Anonymous").toString());
@@ -85,6 +86,7 @@ MainSettingsDialog::MainSettingsDialog(QWidget *parent) :
         }
     }
 
+    ui->cbUseStartDate->setChecked(settings.value("Main/UseStartDate", false).toBool());
     ui->cbCSVAbsTime->setChecked(settings.value("Main/CSVAbsTime", false).toBool());
     ui->comboSendingBus->setCurrentIndex(settings.value("Playback/SendingBus", 4).toInt());
     ui->cbUseFiltered->setChecked(settings.value("Main/UseFiltered", false).toBool());
@@ -123,10 +125,12 @@ MainSettingsDialog::MainSettingsDialog(QWidget *parent) :
     connect(ui->rbMicros, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->rbSysClock, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->rbMillis, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
+    connect(ui->cbUseStartDate, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->cbCSVAbsTime, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->comboSendingBus, SIGNAL(currentIndexChanged(int)), this, SLOT(updateSettings()));
     connect(ui->cbUseFiltered, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->lineClockFormat, SIGNAL(editingFinished()), this, SLOT(updateSettings()));
+    connect(ui->lineStartDate, SIGNAL(editingFinished()), this, SLOT(updateSettings()));
     connect(ui->cbUseOpenGL, SIGNAL(toggled(bool)), this, SLOT(updateSettings()));
     connect(ui->lineRemoteHost, SIGNAL(editingFinished()), this, SLOT(updateSettings()));
     connect(ui->lineRemotePort, SIGNAL(editingFinished()), this, SLOT(updateSettings()));
@@ -195,12 +199,14 @@ void MainSettingsDialog::updateSettings()
     settings.setValue("Main/TimeSeconds", ui->rbSeconds->isChecked());
     settings.setValue("Main/TimeMillis", ui->rbMillis->isChecked());
     settings.setValue("Main/TimeClock", ui->rbSysClock->isChecked());
+    settings.setValue("Main/UseStartDate", ui->cbUseStartDate->isChecked());
     settings.setValue("Main/CSVAbsTime", ui->cbCSVAbsTime->isChecked());
     settings.setValue("Playback/SendingBus", ui->comboSendingBus->currentIndex());
     settings.setValue("Main/UseFiltered", ui->cbUseFiltered->isChecked());
     settings.setValue("Main/UseOpenGL", ui->cbUseOpenGL->isChecked());
     settings.setValue("Main/EqualDataSniff", ui->cbEqualSniffer->isChecked());
     settings.setValue("Main/TimeFormat", ui->lineClockFormat->text());
+    settings.setValue("Main/StartDate", ui->lineStartDate->text());
     settings.setValue("Main/FontSize", ui->spinFontSize->value());
     settings.setValue("Remote/Host", ui->lineRemoteHost->text());
     settings.setValue("Remote/Port", ui->lineRemotePort->text());

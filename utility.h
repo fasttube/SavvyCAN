@@ -17,7 +17,8 @@ enum TimeStyle
     TS_SECONDS,
     TS_MICROS,
     TS_MILLIS,
-    TS_CLOCK
+    TS_CLOCK,
+    TS_START_DATE,
 };
 
 class Utility
@@ -27,6 +28,8 @@ public:
     static bool decimalMode;
     static TimeStyle timeStyle;
     static QString timeFormat;
+    static QDateTime startDate;
+    static bool useStartDate;
 
     static QString fullyQualifiedNameSeperator;
 
@@ -179,6 +182,9 @@ public:
         {
         case TS_CLOCK:
             return QDateTime::fromMSecsSinceEpoch(timestamp / 1000);
+            break;
+        case TS_START_DATE:
+            return startDate.addMSecs(timestamp / 1000);
             break;
         case TS_MILLIS:
             return (double)timestamp / 1000.0;

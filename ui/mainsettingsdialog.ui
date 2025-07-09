@@ -210,6 +210,27 @@
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Start Date:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineStartDate"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbUseStartDate">
+             <property name="text">
+              <string>Use start date</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QCheckBox" name="cbCSVAbsTime">
              <property name="text">
               <string>Use absolute time in decoded CSV output</string>
@@ -510,6 +531,7 @@
   <tabstop>rbMicros</tabstop>
   <tabstop>rbSysClock</tabstop>
   <tabstop>lineClockFormat</tabstop>
+  <tabstop>lineStartDate</tabstop>
   <tabstop>spinFontSize</tabstop>
   <tabstop>cbFlowUseTimestamp</tabstop>
   <tabstop>cbFlowAutoRef</tabstop>
