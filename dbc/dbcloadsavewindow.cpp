@@ -266,6 +266,7 @@ void DBCLoadSaveWindow::moveUp()
     if (idx < 1) return;
     dbcHandler->swapFiles(idx - 1, idx);
     swapTableRows(true);
+    ui->tableFiles->setCurrentCell(idx - 1, 0);
     updateSettings();
 }
 
@@ -276,6 +277,7 @@ void DBCLoadSaveWindow::moveDown()
     if (idx > (dbcHandler->getFileCount() - 2)) return;
     dbcHandler->swapFiles(idx, idx + 1);
     swapTableRows(false);
+    ui->tableFiles->setCurrentCell(idx + 1, 0);
     updateSettings();
 }
 
