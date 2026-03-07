@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "master"
+      - "gs_usb_support"
   workflow_dispatch:
 jobs:
   buildlinux:
