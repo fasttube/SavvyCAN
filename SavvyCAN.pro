@@ -245,6 +245,8 @@ RESOURCES += \
 
 win32-msvc* {
    LIBS += opengl32.lib
+   DEFINES += GS_USB_DRIVER_ENABLED
+   include($$PWD/connections/gs_usb_driver/gs_usb.pri)
 }
 
 win32-g++ {

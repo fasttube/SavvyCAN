@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "master"
+  workflow_dispatch:
 jobs:
   buildlinux:
     name: Linux x64
@@ -107,6 +108,16 @@ jobs:
 
       - name: Clone
         uses: actions/checkout@v3
+
+      - name: Clone and build candle_dll
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          git clone https://github.com/BennyEvans/candle_dll.git candle_dll_src
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -B candle_dll_src/build candle_dll_src
+          cmake --build candle_dll_src/build
+          copy candle_dll_src\build\candle_api.dll libs\candle_api\candle_api.dll
+          copy candle_dll_src\build\candle_api.lib libs\candle_api\candle_api.lib
       
       - name: Compile
         shell: cmd
@@ -119,6 +130,7 @@ jobs:
         run: |
           mkdir package
           copy "release/SavvyCAN.exe" package/
+          copy "libs/candle_api/candle_api.dll" package/
           mkdir package/help
           copy  help/*.md package/help/
           mkdir package/help/images
