@@ -11,6 +11,7 @@ ISOTP_InterpreterWindow::ISOTP_InterpreterWindow(const QVector<CANFrame> *frames
     ui->setupUi(this);
     setWindowFlags(Qt::Window);
     modelFrames = frames;
+    m_isAutoScrolling = false;
 
     decoder = new ISOTP_HANDLER;
     udsDecoder = new UDS_HANDLER;
@@ -33,6 +34,7 @@ ISOTP_InterpreterWindow::ISOTP_InterpreterWindow(const QVector<CANFrame> *frames
     connect(ui->btnClearList, &QPushButton::clicked, this, &ISOTP_InterpreterWindow::clearList);
     connect(ui->btnSaveList, &QPushButton::clicked, this, &ISOTP_InterpreterWindow::saveList);
     connect(ui->cbUseExtendedAddressing, SIGNAL(toggled(bool)), this, SLOT(useExtendedAddressing(bool)));
+    connect(ui->tableIsoFrames->verticalScrollBar(), &QScrollBar::valueChanged, this, &ISOTP_InterpreterWindow::onManualScroll);
 
     QStringList headers;
     headers << "Timestamp" << "ID" << "Bus" << "Dir" << "Length" << "Data";
@@ -322,6 +324,25 @@ void ISOTP_InterpreterWindow::newUDSMessage(UDS_MESSAGE msg)
     ui->txtFrameDetails->setPlainText(buildText);
 }
 
+void ISOTP_InterpreterWindow::onManualScroll()
+{
+    // If the user manually scrolls, check if they're at the bottom
+    if (!m_isAutoScrolling)
+    {
+        QScrollBar *scrollBar = ui->tableIsoFrames->verticalScrollBar();
+        if (scrollBar->value() == scrollBar->maximum())
+        {
+            // At bottom - enable autoscroll
+            ui->cbAutoscroll->setChecked(true);
+        }
+        else
+        {
+            // Not at bottom - disable autoscroll
+            ui->cbAutoscroll->setChecked(false);
+        }
+    }
+}
+
 void ISOTP_InterpreterWindow::newISOMessage(ISOTP_MESSAGE msg)
 {
     int rowNum;
@@ -357,8 +378,21 @@ void ISOTP_InterpreterWindow::newISOMessage(ISOTP_MESSAGE msg)
 
     for (int i = 0; i < dataLen; i++)
     {
-        tempString.append(Utility::formatNumber(data[i]));
-        tempString.append(" ");
+        // if last character is the newline
+        if (i == dataLen -1 && data[i] == '\n') {
+            continue;
+        }
+        tempString.append(QString(QChar(data[i])));
     }
     ui->tableIsoFrames->setItem(rowNum, 5, new QTableWidgetItem(tempString));
+
+    // autoscroll to the newly added row if autoscroll is enabled
+    if (ui->cbAutoscroll->isChecked())
+    {
+        m_isAutoScrolling = true;
+        ui->tableIsoFrames->scrollToItem(ui->tableIsoFrames->item(rowNum, 0), QAbstractItemView::PositionAtBottom);
+        // scroll down one additional row height
+        ui->tableIsoFrames->verticalScrollBar()->setValue(ui->tableIsoFrames->verticalScrollBar()->value() + ui->tableIsoFrames->rowHeight(rowNum));
+        m_isAutoScrolling = false;
+    }
 }
