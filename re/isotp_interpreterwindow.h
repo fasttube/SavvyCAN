@@ -33,6 +33,7 @@ private slots:
     void interpretCapturedFrames();
     void useExtendedAddressing(bool checked);
     void headerClicked(int logicalIndex);
+    void onManualScroll();
 
 private:
     Ui::ISOTP_InterpreterWindow *ui;
@@ -42,6 +43,7 @@ private:
     const QVector<CANFrame> *modelFrames;
     QVector<ISOTP_MESSAGE> messages;
     QHash<int, bool> idFilters;
+    bool m_isAutoScrolling;
 
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
