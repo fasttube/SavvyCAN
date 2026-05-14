@@ -4,8 +4,24 @@
 #include <QDialog>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QMap>
+#include <QVector>
 #include "can_structs.h"
 #include "bus_protocols/uds_handler.h"
+
+struct TeslaNodeInfo
+{
+    QString name;
+    uint32_t requestId;
+    uint32_t responseId;
+    int securityLevel;
+    bool useSecurity;
+    QString securityAlgorithm;
+    int securityBufferSize;
+    QString dataUpload;
+};
 
 namespace Ui {
 class UDSFirmwareUploaderWindow;
@@ -44,11 +60,17 @@ private slots:
     void handleLoadFile();
     void handleStartStop();
     void handleAbort();
+    void handleBrowseTeslaDir();
+    void handleReloadNodes();
+    void handleNodeChanged(int index);
     void gotUDSReply(UDS_MESSAGE msg);
     void timeoutTriggered();
     void testerPresentTick();
 
 private:
+    void loadTeslaNodes();
+    void populateNodeCombo();
+    void autoFillFromNode(int index);
     void logMessage(const QString &msg);
     void setState(UPLOAD_STATE newState);
     void startUpload();
@@ -84,6 +106,10 @@ private:
     int maxBlockLength;
     int currentDataPos;
     bool useSecurity;
+
+    QString teslaDir;
+    QVector<TeslaNodeInfo> teslaNodes;
+    QMap<QString, uint32_t> messageIdMap;
 };
 
 #endif // UDSFIRMWAREUPLOADERWINDOW_H
