@@ -44,6 +44,7 @@ enum UPLOAD_STATE
     STATE_WAIT_EXIT_RESP,
     STATE_SEND_ECU_RESET,
     STATE_WAIT_RESET_RESP,
+    STATE_WAIT_BUILD_ID_RESP,
     STATE_COMPLETE,
     STATE_ERROR
 };
@@ -60,6 +61,7 @@ private slots:
     void handleLoadFile();
     void handleStartStop();
     void handleAbort();
+    void handleReadBuildID();
     void handleBrowseTeslaDir();
     void handleReloadNodes();
     void handleNodeChanged(int index);
@@ -83,6 +85,7 @@ private:
     void sendTransferExit();
     void sendECUReset();
     void sendTesterPresent();
+    void sendReadBuildID();
     void handleNRC(int nrc);
     void advanceState();
 
