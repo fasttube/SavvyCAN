@@ -62,6 +62,7 @@ private slots:
     void handleStartStop();
     void handleAbort();
     void handleReadBuildID();
+    void handleLookupVersion();
     void handleBrowseTeslaDir();
     void handleReloadNodes();
     void handleNodeChanged(int index);
@@ -86,6 +87,7 @@ private:
     void sendECUReset();
     void sendTesterPresent();
     void sendReadBuildID();
+    void lookupVersionMap();
     void handleNRC(int nrc);
     void advanceState();
 
@@ -111,6 +113,7 @@ private:
     bool useSecurity;
 
     QString teslaDir;
+    QString lastBuildId;
     QVector<TeslaNodeInfo> teslaNodes;
     QMap<QString, uint32_t> messageIdMap;
 };
