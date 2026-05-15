@@ -54,10 +54,13 @@ jobs:
         run: |
           qmake CONFIG+=release CONFIG+=sdk_no_version_check SavvyCAN.pro
           make -j`sysctl kern.aioprocmax | awk '{print $2}'`
+          lrelease translations/*.ts
 
       - name: Package     
         run: |
+          mkdir -p SavvyCAN.app/Contents/MacOS/translations
           mkdir -p SavvyCAN.app/Contents/MacOS/help
+          cp -R translations/*.qm SavvyCAN.app/Contents/MacOS/translations
           cp -R help/* SavvyCAN.app/Contents/MacOS/help
           macdeployqt SavvyCAN.app -dmg
           mv SavvyCAN.dmg SavvyCAN_x64.dmg
@@ -84,10 +87,13 @@ jobs:
         run: |
           qmake CONFIG+=release CONFIG+=sdk_no_version_check SavvyCAN.pro
           make -j`sysctl kern.aioprocmax | awk '{print $2}'`
-
+          lrelease translations/*.ts
+      
       - name: Package     
         run: |
+          mkdir -p SavvyCAN.app/Contents/MacOS/translations
           mkdir -p SavvyCAN.app/Contents/MacOS/help
+          cp -R translations/*.qm SavvyCAN.app/Contents/MacOS/translations
           cp -R help/* SavvyCAN.app/Contents/MacOS/help
           macdeployqt SavvyCAN.app -dmg
           mv SavvyCAN.dmg SavvyCAN_arm64.dmg
@@ -120,6 +126,7 @@ jobs:
           mkdir package
           copy "release/SavvyCAN.exe" package/
           mkdir package/help
+          copy  translations/*.qm package/translations/
           copy  help/*.md package/help/
           mkdir package/help/images
           copy help/images/*.* package/help/images/
