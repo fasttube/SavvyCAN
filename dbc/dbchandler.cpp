@@ -1499,12 +1499,15 @@ bool DBCFile::saveFile(QString fileName)
                 else msgOutput.append("0-");
                 break;
             case SP_FLOAT:
-                if (sig->intelByteOrder) msgOutput.append("5-");
-                else msgOutput.append("2-");
-                break;
             case DP_FLOAT:
-                if (sig->intelByteOrder) msgOutput.append("6-");
-                else msgOutput.append("3-");
+                //Floats use the standard byte-order digit (0=motorola, 1=intel) and the
+                //signed marker. The IEEE float/double type itself is declared out-of-band
+                //via a SIG_VALTYPE_ line (emitted below), per the Vector DBC convention.
+                //Older SavvyCAN versions overloaded this digit (2/3/5/6) which is
+                //non-standard and is misread by other tools (e.g. cantools) as a plain
+                //little-endian signed integer.
+                if (sig->intelByteOrder) msgOutput.append("1-");
+                else msgOutput.append("0-");
                 break;
             case STRING:
                 msgOutput.append("4-");
@@ -1546,7 +1549,18 @@ bool DBCFile::saveFile(QString fileName)
                     DBC_VAL_ENUM_ENTRY val = sig->valList[v];
                     valuesOutput.append(" " + QString::number(val.value) + " \"" + val.descript +"\"");
                 }
-                valuesOutput.append(";\n");
+                valuesOutput.append(" ;\n");
+            }
+
+            //Declare IEEE 754 floating point signals out-of-band. 1 = 32-bit float,
+            //2 = 64-bit double. Integer signals get no entry (defaults to 0).
+            if (sig->valType == SP_FLOAT)
+            {
+                sigValTypeOutput.append("SIG_VALTYPE_ " + QString::number(ID) + " " + sig->name + " : 1;\n");
+            }
+            else if (sig->valType == DP_FLOAT)
+            {
+                sigValTypeOutput.append("SIG_VALTYPE_ " + QString::number(ID) + " " + sig->name + " : 2;\n");
             }
         }
         msgOutput.append("\n");
@@ -1673,6 +1687,8 @@ bool DBCFile::saveFile(QString fileName)
     valuesOutput.clear();
     extMultiplexOutput.clear();
 
+    // add a newline at the end like candb++ does it
+    outFile->write("\n");
     outFile->close();
     delete outFile;
 
