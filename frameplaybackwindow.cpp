@@ -447,33 +447,36 @@ void FramePlaybackWindow::updateFrameLabel()
     ui->lblCurrPlayback->setText(currentSeqItem->filename);
 
     // convert current and last timestamp to text according to time format
-    QVariant currentTimestamp = Utility::formatTimestamp(seqItems[row].data[currentPosition].timeStamp().microSeconds());
-    QString currentTimestampText;
-    if (currentTimestamp.typeId() == QMetaType::Double)
-        currentTimestampText = QString::number(currentTimestamp.toDouble(), 'f', 5);
-    else if (currentTimestamp.typeId() == QMetaType::LongLong || currentTimestamp.typeId() == QMetaType::ULongLong)
-        currentTimestampText = QString::number(currentTimestamp.toLongLong());
-    else if (currentTimestamp.typeId() == QMetaType::QDateTime)
-        currentTimestampText = currentTimestamp.toDateTime().toString(Utility::timeFormat);
-    else
-        currentTimestampText = currentTimestamp.toString();
+    // TODO fix for QT5 from customizing branch
+    // QVariant currentTimestamp = Utility::formatTimestamp(seqItems[row].data[currentPosition].timeStamp().microSeconds());
+    // QString currentTimestampText;
+    // if (currentTimestamp.typeId() == QMetaType::Double)
+    //     currentTimestampText = QString::number(currentTimestamp.toDouble(), 'f', 5);
+    // else if (currentTimestamp.typeId() == QMetaType::LongLong || currentTimestamp.typeId() == QMetaType::ULongLong)
+    //     currentTimestampText = QString::number(currentTimestamp.toLongLong());
+    // else if (currentTimestamp.typeId() == QMetaType::QDateTime)
+    //     currentTimestampText = currentTimestamp.toDateTime().toString(Utility::timeFormat);
+    // else
+    //     currentTimestampText = currentTimestamp.toString();
 
-    QVariant lastTimestamp = Utility::formatTimestamp(seqItems[row].data.last().timeStamp().microSeconds());
-    QString lastTimestampText;
-    if (lastTimestamp.typeId() == QMetaType::Double)
-        lastTimestampText = QString::number(lastTimestamp.toDouble(), 'f', 5);
-    else if (lastTimestamp.typeId() == QMetaType::LongLong || lastTimestamp.typeId() == QMetaType::ULongLong)
-        lastTimestampText = QString::number(lastTimestamp.toLongLong());
-    else if (lastTimestamp.typeId() == QMetaType::QDateTime)
-        lastTimestampText = lastTimestamp.toDateTime().toString(Utility::timeFormat);
-    else
-        lastTimestampText = lastTimestamp.toString();
+    // QVariant lastTimestamp = Utility::formatTimestamp(seqItems[row].data.last().timeStamp().microSeconds());
+    // QString lastTimestampText;
+    // if (lastTimestamp.typeId() == QMetaType::Double)
+    //     lastTimestampText = QString::number(lastTimestamp.toDouble(), 'f', 5);
+    // else if (lastTimestamp.typeId() == QMetaType::LongLong || lastTimestamp.typeId() == QMetaType::ULongLong)
+    //     lastTimestampText = QString::number(lastTimestamp.toLongLong());
+    // else if (lastTimestamp.typeId() == QMetaType::QDateTime)
+    //     lastTimestampText = lastTimestamp.toDateTime().toString(Utility::timeFormat);
+    // else
+    //     lastTimestampText = lastTimestamp.toString();
 
     if (wantPlaying && !isPlaying)
         ui->lblPosition->setText(QString::number(currentPosition) + tr(" of ") + QString::number(seqItems[row].data.count()) + "  (WAITING)");
     else
         ui->lblPosition->setText(QString::number(currentPosition) + tr(" of ") + QString::number(seqItems[row].data.count()));
-    ui->timePosition->setText(currentTimestampText + tr(" of ") + lastTimestampText);
+
+    // TODO fix for QT5 from customizing branch
+    // ui->timePosition->setText(currentTimestampText + tr(" of ") + lastTimestampText);
 }
 
 void FramePlaybackWindow::seqTableCellClicked(int row, int col)

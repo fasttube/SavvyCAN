@@ -299,7 +299,8 @@ void FramePlaybackObject::seekPlayback(double timestamp)
     /* make sure we execute in mThread context */
     if (mThread_p && (mThread_p != QThread::currentThread()))
     {
-        QMetaObject::invokeMethod(this, "seekPlayback", Qt::BlockingQueuedConnection, timestamp);
+        // TODO fix for QT5 from customizing branch
+        // QMetaObject::invokeMethod(this, "seekPlayback", Qt::BlockingQueuedConnection, timestamp);
         return;
     }
 
