@@ -67,17 +67,6 @@ bool DBCSignalHandler::addSignal(DBC_SIGNAL &sig)
     return true;
 }
 
-bool signal_cmp(DBC_SIGNAL *a, DBC_SIGNAL *b) {
-    return a->startBit < b->startBit;
-}
-
-QList<DBC_SIGNAL*> DBCSignalHandler::getSignalsAsList()
-{
-    QList<DBC_SIGNAL*> sig_list = sigs.values();
-    std::sort(sig_list.begin(), sig_list.end(), signal_cmp);
-    return sig_list;
-}
-
 bool DBCSignalHandler::removeSignal(DBC_SIGNAL *sig)
 {
     qDebug() << "Total # of signals: " << getCount();
@@ -126,9 +115,14 @@ int DBCSignalHandler::getCount()
     return sigs.count();
 }
 
+bool signal_cmp(DBC_SIGNAL a, DBC_SIGNAL b)
+{
+    return a.startBit < b.startBit;
+}
+
 void DBCSignalHandler::sort()
 {
-    std::sort(sigs.begin(), sigs.end());
+    std::sort(sigs.begin(), sigs.end(), signal_cmp);
 }
 
 DBC_MESSAGE* DBCMessageHandler::findMsgByID(uint32_t id)
@@ -299,9 +293,14 @@ int DBCMessageHandler::getCount()
     return messages.count();
 }
 
+bool msg_cmp(DBC_MESSAGE a, DBC_MESSAGE b)
+{
+    return a.ID < b.ID;
+}
+
 void DBCMessageHandler::sort()
 {
-    std::sort(messages.begin(), messages.end());
+    std::sort(messages.begin(), messages.end(), msg_cmp);
     for (int i = 0; i < messages.count(); i++)
     {
         messages[i].sigHandler->sort();
@@ -1438,6 +1437,8 @@ bool DBCFile::parseAttribute(QString inpString, DBC_ATTRIBUTE &attr)
 
 bool DBCFile::saveFile(QString fileName)
 {
+    // sort();
+    messageHandler->sort(); // sort messages, each of which sorts its signals too
     int nodeNumber = 1;
     int msgNumber = 1;
     int sigNumber = 1;
@@ -2465,8 +2466,8 @@ DBCHandler::DBCHandler()
             attr.upper = 0;
             attr.name = "matchingcriteria";
             attr.valType = ATTR_INT;
-            file->dbc_attributes.append(attr);
-            file->messageHandler->setMatchingCriteria(matchingCriteria);
+            // file->dbc_attributes.append(attr);
+            // file->messageHandler->setMatchingCriteria(matchingCriteria);
 
             int filterLabeling = settings.value("DBC/FilterLabeling_" + QString::number(i),0).toInt();
             attr.attrType = ATTR_TYPE_MESSAGE;
@@ -2476,8 +2477,8 @@ DBCHandler::DBCHandler()
             attr.upper = 0;
             attr.name = "filterlabeling";
             attr.valType = ATTR_INT;
-            file->dbc_attributes.append(attr);
-            file->messageHandler->setFilterLabeling(filterLabeling);
+            // file->dbc_attributes.append(attr);
+            // file->messageHandler->setFilterLabeling(filterLabeling);
 
             qInfo() << "Loaded DBC file" << filename << " (bus:" << bus
                 << ", Matching Criteria:" << (int)matchingCriteria << "Filter labeling: " << (filterLabeling?"enabled":"disabled") << ")";
