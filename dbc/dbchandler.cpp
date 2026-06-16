@@ -117,7 +117,11 @@ int DBCSignalHandler::getCount()
 
 bool signal_cmp(DBC_SIGNAL a, DBC_SIGNAL b)
 {
-    return a.startBit < b.startBit;
+    if (a.startBit == b.startBit) {
+        return QString::compare(a.name, b.name, Qt::CaseInsensitive) < 0;
+    } else {
+        return a.startBit < b.startBit;
+    }
 }
 
 void DBCSignalHandler::sort()
