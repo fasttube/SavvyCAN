@@ -115,8 +115,21 @@ int DBCSignalHandler::getCount()
     return sigs.count();
 }
 
+// sort by multiplex value ascending, -1 if non multiplexed/multiplexor
+static int signalMuxSortValue(DBC_SIGNAL &sig)
+{
+    if (sig.isMultiplexed)
+        return sig.getSimpleMultiplexValue();
+    return -1;
+}
+
 bool signal_cmp(DBC_SIGNAL a, DBC_SIGNAL b)
 {
+    int muxA = signalMuxSortValue(a);
+    int muxB = signalMuxSortValue(b);
+    if (muxA != muxB)
+        return muxA < muxB;
+
     if (a.startBit == b.startBit) {
         return QString::compare(a.name, b.name, Qt::CaseInsensitive) < 0;
     } else {
