@@ -573,26 +573,34 @@ QVariant CANFrameModel::data(const QModelIndex &index, int role) const
                 {
                     tempString.append("   <" + msg->name + ">\n");
                     if (msg->comment.length() > 1) tempString.append(msg->comment + "\n");
+                    //Iterate signals in their fixed DBC index order so the displayed lines keep
+                    //the same position from frame to frame and don't jump around when a new
+                    //multiplex value arrives, which makes the output much easier to read.
                     for (int j = 0; j < msg->sigHandler->getCount(); j++)
-                    {                        
+                    {
                         QString sigString;
                         DBC_SIGNAL* sig = msg->sigHandler->findSignalByIdx(j);
 
-                        if ( (sig->multiplexParent == nullptr) && sig->processAsText(thisFrame, sigString))
+                        if (sig->isSignalInMessage(thisFrame))
                         {
-                            tempString.append(sigString);
-                            tempString.append("\n");
-                            if (sig->isMultiplexor)
+                            //Signal really is part of this exact frame: a plain signal, the
+                            //multiplexor itself, or a multiplexed child whose multiplex value
+                            //matches this frame. Show the freshly decoded value and remember it
+                            //(per this model) so other multiplex branches can keep showing it.
+                            if (sig->processAsText(thisFrame, sigString))
                             {
-                                qDebug() << "Multiplexor. Diving into the tree";
-                                tempString.append(sig->processSignalTree(thisFrame));
+                                sigDisplayCache[sig] = sigString;
+                                tempString.append(sigString);
+                                tempString.append("\n");
                             }
                         }
-                        else if (sig->isMultiplexed && overwriteDups) //wasn't in this exact frame but is in the message. Use cached value
+                        else if (sig->isMultiplexed && overwriteDups && sigDisplayCache.contains(sig))
                         {
-                            bool isInteger = false;
-                            if (sig->valType == UNSIGNED_INT || sig->valType == SIGNED_INT) isInteger = true;
-                            tempString.append(sig->makePrettyOutput(sig->cachedValue.toDouble(), sig->cachedValue.toLongLong(), true, isInteger));
+                            //Multiplexed child from a different branch, so it isn't in this exact
+                            //frame. Show the last value this view actually decoded for it. Using our
+                            //own cache (not DBC_SIGNAL::cachedValue) means values another window
+                            //decodes for the same signal can't bleed in here.
+                            tempString.append(sigDisplayCache.value(sig));
                             tempString.append("\n");
                         }
                     }
@@ -882,6 +890,8 @@ void CANFrameModel::clearFrames(bool forceClearFilters)
         filters.clear();
         busFilters.clear();
     }
+    //forget any cached multiplex signal values so a fresh capture doesn't display stale data
+    sigDisplayCache.clear();
     frames.reserve(preallocSize);
     filteredFrames.reserve(preallocSize);
     this->endResetModel();

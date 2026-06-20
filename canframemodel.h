@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QVector>
+#include <QHash>
 #include <QDebug>
 #include <QMutex>
 #include "can_structs.h"
@@ -89,6 +90,10 @@ private:
     QMap<int, bool> filters;
     QMap<int, bool> busFilters;
     DBCHandler *dbcHandler;
+    //model-owned cache of the last rendered text for each signal, used to keep multiplexed
+    //signals from other branches visible. Kept separate from DBC_SIGNAL::cachedValue so that
+    //other windows decoding the same signal can't clobber what this view shows.
+    mutable QHash<DBC_SIGNAL *, QString> sigDisplayCache; //mutable: updated from const data()
     QMutex mutex;
     bool interpretFrames; //should we use the dbcHandler?
     bool overwriteDups; //should we display all frames or only the newest for each ID?
