@@ -357,7 +357,7 @@ void ISOTP_InterpreterWindow::newISOMessage(ISOTP_MESSAGE msg)
     {
         idFilters.insert(msg.frameId(), true);
 
-        FilterUtility::createCheckableFilterItem(msg.frameId(), true, ui->listFilter);
+        FilterUtility::createCheckableFilterItem(msg.frameId(), false, ui->listFilter);
     }
     if (!idFilters[msg.frameId()]) return;
     messages.append(msg);
