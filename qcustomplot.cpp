@@ -9646,7 +9646,7 @@ void QCPAxis::wheelEvent(QWheelEvent *event)
   const double wheelSteps = delta/120.0; // a single step delta is +/-120 usually
   const double factor = qPow(mAxisRect->rangeZoomFactor(orientation()), wheelSteps);
   scaleRange(factor, pixelToCoord(orientation() == Qt::Horizontal ? pos.x() : pos.y()));
-  mParentPlot->replot();
+  mParentPlot->replot(QCustomPlot::rpQueuedReplot);
 }
 
 /*! \internal
@@ -18697,7 +18697,7 @@ void QCPAxisRect::wheelEvent(QWheelEvent *event)
             axis->scaleRange(factor, axis->pixelToCoord(pos.y()));
         }
       }
-      mParentPlot->replot();
+      mParentPlot->replot(QCustomPlot::rpQueuedReplot);
     }
   }
 }
