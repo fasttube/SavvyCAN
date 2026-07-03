@@ -37,6 +37,7 @@ private:
     void readSettings();
     void writeSettings();
     void generateSampleText();
+    void warnIfDuplicateID(uint32_t id);
 };
 
 #endif // DBCMESSAGEEDITOR_H

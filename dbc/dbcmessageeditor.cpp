@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QKeyEvent>
 #include <QColorDialog>
+#include <QMessageBox>
 #include "helpwindow.h"
 #include "utility.h"
 
@@ -37,6 +38,7 @@ DBCMessageEditor::DBCMessageEditor(QWidget *parent) :
             if ((dbcMessage->ID & 0x1FFFFFFFul) != Utility::ParseStringToNum(ui->lineFrameID->text())) dbcFile->setDirtyFlag();
             dbcMessage->ID = Utility::ParseStringToNum(ui->lineFrameID->text());
             emit updatedTreeInfo(dbcMessage);
+            warnIfDuplicateID(dbcMessage->ID);
         });
 
     connect(ui->lineMsgName, &QLineEdit::editingFinished,
@@ -235,6 +237,31 @@ void DBCMessageEditor::refreshView()
     suppressEditCallbacks = false;
 
     generateSampleText();
+}
+
+//Warn if any other message in the file already uses the same CAN ID. Duplicate IDs are legal
+//in the DBC format but almost always a mistake, so this just informs rather than blocks.
+void DBCMessageEditor::warnIfDuplicateID(uint32_t id)
+{
+    if (!dbcFile) return;
+    int count = 0;
+    for (int i = 0; i < dbcFile->messageHandler->getCount(); i++)
+    {
+        DBC_MESSAGE *m = dbcFile->messageHandler->findMsgByIdx(i);
+        if (m != dbcMessage && (m->ID & 0x1FFFFFFFul) == (id & 0x1FFFFFFFul)) count++;
+    }
+    if (count > 0)
+    {
+        //Showing the modal dialog pulls focus off the ID field, which re-emits editingFinished
+        //and would stack a second warning. Suppress the edit callbacks while the dialog is up.
+        bool prevSuppress = suppressEditCallbacks;
+        suppressEditCallbacks = true;
+        QMessageBox::warning(this, tr("Duplicate ID"),
+            tr("Another message already uses ID %1.\n"
+               "Duplicate IDs are allowed but are usually a mistake.")
+                .arg(Utility::formatCANID(id & 0x1FFFFFFFul)));
+        suppressEditCallbacks = prevSuppress;
+    }
 }
 
 void DBCMessageEditor::generateSampleText()
