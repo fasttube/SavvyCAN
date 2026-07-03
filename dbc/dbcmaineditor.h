@@ -18,6 +18,8 @@ namespace Ui {
 class DBCMainEditor;
 }
 
+class QTableWidget;
+
 class QTreeWidgetSignalItem : public QTreeWidgetItem
 {
 public:
@@ -72,6 +74,7 @@ private slots:
     void newSignal();    
     void onRebaseMessages();
     void onDuplicateNode();
+    void showUsedIDs();
 
 private:
     Ui::DBCMainEditor *ui;
@@ -109,6 +112,8 @@ private:
     void processSignalToTree(QTreeWidgetItem *parent, DBC_SIGNAL *sig);
     uint32_t getParentMessageID(QTreeWidgetItem *cell);
     QString createSignalText(DBC_SIGNAL *sig);
+    void populateUsedIDsTable(QTableWidget *table, bool showUnused);
+    void jumpToMessage(uint32_t msgID);
 };
 
 #endif // DBCMAINEDITOR_H

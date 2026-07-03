@@ -5,9 +5,17 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QColorDialog>
+#include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QHeaderView>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QCheckBox>
+#include <QSet>
+#include <QPalette>
 #include <QRandomGenerator>
 #include <qevent.h>
+#include <algorithm>
 #include "helpwindow.h"
 
 DBCMainEditor::DBCMainEditor( const QVector<CANFrame> *frames, QWidget *parent) :
@@ -34,6 +42,7 @@ DBCMainEditor::DBCMainEditor( const QVector<CANFrame> *frames, QWidget *parent) 
     connect(ui->btnNewNode, &QAbstractButton::clicked, this, QOverload<>::of(&DBCMainEditor::newNode));
     connect(ui->btnNewMessage, &QAbstractButton::clicked, this, &DBCMainEditor::newMessage);
     connect(ui->btnNewSignal, &QAbstractButton::clicked, this, &DBCMainEditor::newSignal);
+    connect(ui->btnUsedIDs, &QAbstractButton::clicked, this, &DBCMainEditor::showUsedIDs);
 
     sigEditor = new DBCSignalEditor(this);
     msgEditor = new DBCMessageEditor(this);
@@ -68,6 +77,8 @@ DBCMainEditor::DBCMainEditor( const QVector<CANFrame> *frames, QWidget *parent) 
 
     //ui->btnNewSignal->setFixedSize(32,32);
     ui->btnNewSignal->setIconSize(QSize(32, 32));
+
+    ui->btnUsedIDs->setIconSize(QSize(32, 32));
 
     installEventFilter(this);
 }
@@ -801,6 +812,139 @@ void DBCMainEditor::newSignal()
     parentItem->addChild(newSigItem);
     ui->treeDBC->setCurrentItem(newSigItem);
     dbcFile->setDirtyFlag();
+}
+
+//Fills the given table with one row per message, sorted ascending by ID. Duplicate IDs are
+//highlighted. When showUnused is set, every free ID in the standard 11-bit range (0x000-0x7FF)
+//is interleaved as a greyed "free" row so an available ID is easy to pick. Rows that map to a
+//real message carry that message's ID in Qt::UserRole so a double-click can jump to it.
+void DBCMainEditor::populateUsedIDsTable(QTableWidget *table, bool showUnused)
+{
+    table->clearContents();
+    table->setRowCount(0);
+    if (!dbcFile) return;
+
+    QVector<DBC_MESSAGE *> msgs;
+    for (int i = 0; i < dbcFile->messageHandler->getCount(); i++)
+        msgs.append(dbcFile->messageHandler->findMsgByIdx(i));
+
+    QMap<uint32_t, int> idCounts; //how often each ID appears -> duplicate detection
+    QSet<uint32_t> usedSet;
+    for (DBC_MESSAGE *m : msgs) { idCounts[m->ID]++; usedSet.insert(m->ID); }
+
+    struct Row { uint32_t id; DBC_MESSAGE *msg; }; //msg == nullptr marks a free ID
+    QVector<Row> rows;
+    for (DBC_MESSAGE *m : msgs) rows.append({m->ID, m});
+    if (showUnused)
+    {
+        for (uint32_t id = 0; id <= 0x7FF; id++)
+            if (!usedSet.contains(id)) rows.append({id, nullptr});
+    }
+    //stable sort keeps duplicate-ID messages in their original relative order
+    std::stable_sort(rows.begin(), rows.end(), [](const Row &a, const Row &b) { return a.id < b.id; });
+
+    const QColor dupColor(0xFF, 0x88, 0x88);
+    const QColor freeColor = table->palette().color(QPalette::Disabled, QPalette::Text);
+
+    table->setRowCount(rows.count());
+    for (int r = 0; r < rows.count(); r++)
+    {
+        const Row &row = rows[r];
+        QTableWidgetItem *idItem = new QTableWidgetItem(Utility::formatCANID(row.id));
+        QTableWidgetItem *nameItem;
+        QTableWidgetItem *nodeItem;
+        if (row.msg)
+        {
+            nameItem = new QTableWidgetItem(row.msg->name);
+            nodeItem = new QTableWidgetItem(row.msg->sender ? row.msg->sender->name : QString());
+            idItem->setData(Qt::UserRole, row.msg->ID); //presence of this marks the row as jumpable
+            if (idCounts.value(row.msg->ID) > 1)
+            {
+                idItem->setBackground(dupColor);
+                nameItem->setBackground(dupColor);
+                nodeItem->setBackground(dupColor);
+            }
+        }
+        else
+        {
+            nameItem = new QTableWidgetItem(tr("— free —"));
+            nodeItem = new QTableWidgetItem();
+            idItem->setForeground(freeColor);
+            nameItem->setForeground(freeColor);
+        }
+        table->setItem(r, 0, idItem);
+        table->setItem(r, 1, nameItem);
+        table->setItem(r, 2, nodeItem);
+    }
+    table->resizeColumnsToContents();
+}
+
+//Select and scroll to the message with the given ID in the main tree.
+void DBCMainEditor::jumpToMessage(uint32_t msgID)
+{
+    if (!dbcFile) return;
+    DBC_MESSAGE *msg = dbcFile->messageHandler->findMsgByID(msgID);
+    if (!msg || !messageToItem.contains(msg)) return;
+    QTreeWidgetItem *item = messageToItem.value(msg);
+    if (item->parent()) item->parent()->setExpanded(true);
+    ui->treeDBC->setCurrentItem(item);
+    ui->treeDBC->scrollToItem(item);
+}
+
+//Builds a modeless window listing every message ID in use, sorted ascending, with duplicate
+//IDs highlighted. If any duplicates exist a warning dialog is shown listing them.
+void DBCMainEditor::showUsedIDs()
+{
+    if (!dbcFile) return;
+
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setWindowTitle(tr("Used Message IDs"));
+    dlg->resize(450, 550);
+    QVBoxLayout *lay = new QVBoxLayout(dlg);
+
+    QCheckBox *chkUnused = new QCheckBox(tr("Show unused IDs (0x000-0x7FF)"), dlg);
+    lay->addWidget(chkUnused);
+
+    QTableWidget *table = new QTableWidget(dlg);
+    table->setColumnCount(3);
+    table->setHorizontalHeaderLabels(QStringList() << tr("ID") << tr("Message") << tr("Node"));
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->verticalHeader()->setVisible(false);
+    table->horizontalHeader()->setStretchLastSection(true);
+    lay->addWidget(table);
+
+    QLabel *hint = new QLabel(tr("Double-click a message to jump to it in the tree."), dlg);
+    lay->addWidget(hint);
+
+    populateUsedIDsTable(table, false);
+
+    connect(chkUnused, &QCheckBox::toggled, this, [this, table](bool checked) {
+        populateUsedIDsTable(table, checked);
+    });
+    connect(table, &QTableWidget::cellDoubleClicked, this, [this, table](int row, int /*col*/) {
+        QTableWidgetItem *idItem = table->item(row, 0);
+        if (idItem && idItem->data(Qt::UserRole).isValid())
+            jumpToMessage(idItem->data(Qt::UserRole).toUInt());
+    });
+
+    dlg->show();
+
+    //assemble the list of duplicated IDs and warn about them on open (QMap keeps keys sorted)
+    QMap<uint32_t, int> idCounts;
+    for (int i = 0; i < dbcFile->messageHandler->getCount(); i++)
+        idCounts[dbcFile->messageHandler->findMsgByIdx(i)->ID]++;
+    QStringList dupStrings;
+    for (auto it = idCounts.begin(); it != idCounts.end(); ++it)
+        if (it.value() > 1)
+            dupStrings.append(Utility::formatCANID(it.key()) + " (" + QString::number(it.value()) + " messages)");
+
+    if (!dupStrings.isEmpty())
+    {
+        QMessageBox::warning(dlg, tr("Duplicate IDs Detected"),
+            tr("The following message IDs are used more than once:\n\n") + dupStrings.join("\n"));
+    }
 }
 
 //gets confirmation before calling the real routines that delete things

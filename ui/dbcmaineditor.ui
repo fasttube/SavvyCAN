@@ -82,6 +82,23 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="btnUsedIDs">
+       <property name="text">
+        <string>Used IDs</string>
+       </property>
+       <property name="toolTip">
+        <string>Show all used message IDs sorted ascending and check for duplicates</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../icons.qrc">
+         <normaloff>:/icons/images/message.png</normaloff>:/icons/images/message.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
