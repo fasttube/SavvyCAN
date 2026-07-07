@@ -297,19 +297,18 @@ void ConnectionWindow::handleRemoveConn()
     ui->tableConnections->selectRow(0);
 }
 
-void ConnectionWindow::handleResetConn()
+void ConnectionWindow::resetConnection(int idx)
 {
     QString port, driver;
     CANCon::type type;
     int serSpeed, busSpeed, dataRate;
     bool canFd;
 
-    int selIdx = ui->tableConnections->selectionModel()->currentIndex().row();
-    if (selIdx <0) return;
+    if (idx < 0) return;
 
-    qDebug() << "remove connection at index: " << selIdx;
+    qDebug() << "reset connection at index: " << idx;
 
-    CANConnection* conn_p = connModel->getAtIdx(selIdx);
+    CANConnection* conn_p = connModel->getAtIdx(idx);
     if(!conn_p) return;
 
     type = conn_p->getType();
@@ -327,7 +326,23 @@ void ConnectionWindow::handleResetConn()
     conn_p = nullptr;
 
     conn_p = create(type, port, driver, serSpeed, busSpeed,canFd,dataRate);
-    if (conn_p) connModel->replace(selIdx, conn_p);
+    if (conn_p) connModel->replace(idx, conn_p);
+}
+
+void ConnectionWindow::handleResetConn()
+{
+    int selIdx = ui->tableConnections->selectionModel()->currentIndex().row();
+    resetConnection(selIdx);
+}
+
+void ConnectionWindow::resetAllConnections()
+{
+    qDebug() << "resetting all connections";
+
+    for (int i = 0; i < connModel->rowCount(); i++)
+    {
+        resetConnection(i);
+    }
 }
 
 /* status */

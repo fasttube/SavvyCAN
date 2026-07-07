@@ -11,6 +11,7 @@
 #include "filterutility.h"
 
 #include <QClipboard>
+#include <QShortcut>
 /*
 Some notes on things I'd like to put into the program but haven't put on github (yet)
 
@@ -230,6 +231,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //Automatically create the connection window so it can be updated even if we never opened it.
     connectionWindow = new ConnectionWindow();
     connect(this, SIGNAL(suspendCapturing(bool)), connectionWindow, SLOT(setSuspendAll(bool)));
+
+    //Ctrl+R reloads (resets) all connections, as if resetting each device in the connection window.
+    QShortcut *reloadConnShortcut = new QShortcut(QKeySequence(tr("Ctrl+R")), this);
+    connect(reloadConnShortcut, &QShortcut::activated, connectionWindow, &ConnectionWindow::resetAllConnections);
 
     //these either are unfinished/not working or are not for general use. But,they exist
     //so if you want to enable them and play with them then go for it.

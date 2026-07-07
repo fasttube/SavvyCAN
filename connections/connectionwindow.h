@@ -38,6 +38,7 @@ signals:
 public slots:
     void getDebugText(QString debugText);
     void setSuspendAll(bool pSuspend);
+    void resetAllConnections();
 
 
 private slots:
@@ -66,6 +67,7 @@ private:
     QVector<QString> remoteDeviceKayak;
 
     CANConnection* create(CANCon::type pTye, QString pPortName, QString pDriver, int pSerialSpeed, int pBusSpeed, bool pCanFd, int pDataRate);
+    void resetConnection(int idx);
     void populateBusDetails(int offset);
     void loadConnections();
     void saveConnections();
