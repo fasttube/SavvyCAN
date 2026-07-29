@@ -37,9 +37,9 @@ NewConnectionDialog::NewConnectionDialog(QVector<QString>* gvretips, QVector<QSt
     connect(ui->rbGSUSB, &QAbstractButton::clicked, this, &NewConnectionDialog::handleConnTypeChanged);
 
 #ifndef Q_OS_WIN
-    //on Linux and macOS the kernel gs_usb driver already exposes these devices as SocketCAN
-    ui->rbGSUSB->setEnabled(false);
-    ui->rbGSUSB->setToolTip("Connect gs_usb devices through SocketCAN on this platform");
+    //on Linux and macOS the kernel gs_usb driver already exposes these devices as SocketCAN,
+    //so there is nothing here to offer and the option is left out entirely
+    ui->rbGSUSB->setVisible(false);
 #endif
 
     connect(ui->cbDeviceType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &NewConnectionDialog::handleDeviceTypeChanged);

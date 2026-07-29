@@ -7,7 +7,9 @@
 #include "lawicel_serial.h"
 #include "canserver.h"
 #include "canlogserver.h"
+#ifdef Q_OS_WIN
 #include "gs_usb.h"
+#endif
 
 using namespace CANCon;
 
