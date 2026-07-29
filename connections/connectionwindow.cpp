@@ -580,6 +580,13 @@ void ConnectionWindow::loadConnections()
     for(int i = 0 ; i < portNames.count() ; i++)
     {
       CANConnection* conn_p = create((CANCon::type)devTypes[i], portNames[i], driverNames[i], serialSpeeds[i], busSpeeds[i], isCanFds[i] ? true : false, DataRates[i]);
+        /* the factory returns nothing for a connection type this build cannot create, for
+         * instance a gs_usb device in a settings file carried over from Windows */
+        if (!conn_p)
+        {
+            qDebug() << "Skipping saved connection of unsupported type" << devTypes[i] << portNames[i];
+            continue;
+        }
         /* add connection to model */
         connModel->add(conn_p);
     }

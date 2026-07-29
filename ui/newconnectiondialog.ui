@@ -88,7 +88,7 @@
       <item row="8" column="0">
        <widget class="QRadioButton" name="rbGSUSB">
         <property name="text">
-         <string>gs_usb (candleLight, CANable, CANnectivity)</string>
+         <string>gs_usb (over WinUSB)</string>
         </property>
        </widget>
       </item>
