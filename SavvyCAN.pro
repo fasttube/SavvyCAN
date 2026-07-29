@@ -265,8 +265,9 @@ win32 {
        connections/candle_api/candle_defs.h \
        connections/candle_api/ch_9.h
 
-   #lower case names so this also links with a case sensitive MinGW cross toolchain
-   LIBS += -lsetupapi -lole32 -lwinusb
+   # advapi32 for the Reg* calls in candle.c - MinGW pulls it in by default, MSVC does not.
+   # Lower case names so this also links with a case sensitive MinGW cross toolchain.
+   LIBS += -lsetupapi -lole32 -lwinusb -ladvapi32
 
    # the candle API calls the TCHAR flavour of the setupapi/strsafe functions with wide strings
    DEFINES += UNICODE _UNICODE
