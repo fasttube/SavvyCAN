@@ -237,7 +237,7 @@ bool __stdcall DLL candle_list_length(candle_list_handle list, uint8_t *len);
 
 bool __stdcall DLL candle_dev_get(candle_list_handle list, uint8_t dev_num, candle_handle *hdev);
 bool __stdcall DLL candle_dev_get_state(candle_handle hdev, candle_devstate_t *state);
-wchar_t __stdcall DLL *candle_dev_get_path(candle_handle hdev);
+wchar_t * __stdcall DLL candle_dev_get_path(candle_handle hdev);
 bool __stdcall DLL candle_dev_open(candle_handle hdev);
 bool __stdcall DLL candle_dev_get_timestamp_us(candle_handle hdev, uint32_t *timestamp_us);
 bool __stdcall DLL candle_dev_close(candle_handle hdev);
@@ -259,7 +259,7 @@ uint32_t __stdcall DLL candle_frame_id(candle_frame_t *frame);
 bool __stdcall DLL candle_frame_is_extended_id(candle_frame_t *frame);
 bool __stdcall DLL candle_frame_is_rtr(candle_frame_t *frame);
 uint8_t __stdcall DLL candle_frame_dlc(candle_frame_t *frame);
-uint8_t __stdcall DLL *candle_frame_data(candle_frame_t *frame);
+uint8_t * __stdcall DLL candle_frame_data(candle_frame_t *frame);
 uint32_t __stdcall DLL candle_frame_timestamp_us(candle_frame_t *frame);
 
 /* CAN FD extensions */
@@ -274,7 +274,7 @@ bool __stdcall DLL candle_fd_frame_is_rtr(candle_fd_frame_t *frame);
 bool __stdcall DLL candle_fd_frame_is_fd(candle_fd_frame_t *frame);
 bool __stdcall DLL candle_fd_frame_is_brs(candle_fd_frame_t *frame);
 uint8_t __stdcall DLL candle_fd_frame_dlc(candle_fd_frame_t *frame);
-uint8_t __stdcall DLL *candle_fd_frame_data(candle_fd_frame_t *frame);
+uint8_t * __stdcall DLL candle_fd_frame_data(candle_fd_frame_t *frame);
 uint32_t __stdcall DLL candle_fd_frame_timestamp_us(candle_fd_frame_t *frame);
 
 candle_err_t __stdcall DLL candle_dev_last_error(candle_handle hdev);

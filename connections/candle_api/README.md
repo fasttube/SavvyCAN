@@ -1,6 +1,6 @@
 # candle API (gs_usb / candleLight Windows driver)
 
-Vendored, unmodified copy of the candle Windows API used by SavvyCAN's gs_usb
+Vendored copy of the candle Windows API used by SavvyCAN's gs_usb
 connection (`connections/gs_usb.cpp`). It talks to gs_usb class devices
 (candleLight, CANable, CANnectivity, cantact, ...) over WinUSB, so no vendor
 driver is needed — only a WinUSB binding on the device interface (which the
@@ -12,6 +12,14 @@ stock candleLight/CANable firmware already declares via WCID descriptors).
 - This copy: <https://github.com/Schildkroet/CANgaroo>, `src/driver/CandleApiDriver/api/`
   at commit `ed3088d5393e02a01afe867af2ee8ab0e12db039`, which adds CAN FD,
   multi-channel and hardware timestamp support — Copyright (c) 2026 Schildkroet
+
+## Local changes
+
+Kept to the minimum needed to build here; re-apply them when refreshing from upstream.
+
+- `candle.h` / `candle.c`: the three functions returning a pointer declared the calling
+  convention before the `*` (`wchar_t __stdcall DLL *candle_dev_get_path`). MinGW accepts
+  that, MSVC rejects it with C2165, so `__stdcall` moved behind the `*`.
 
 ## License
 
