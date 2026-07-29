@@ -7,6 +7,7 @@
 #include "lawicel_serial.h"
 #include "canserver.h"
 #include "canlogserver.h"
+#include "gs_usb.h"
 
 using namespace CANCon;
 
@@ -32,6 +33,13 @@ CANConnection* CanConFactory::create(type pType, QString pPortName, QString pDri
         return new CANserver(pPortName);
     case CANLOGSERVER:
         return new CanLogServer(pPortName);
+    case GS_USB:
+#ifdef Q_OS_WIN
+        return new GSUSBConnection(pPortName, pBusSpeed, pCanFd, pDataRate);
+#else
+        //everywhere else gs_usb devices are handled by the kernel driver and show up as SocketCAN
+        return nullptr;
+#endif
     default: {}
     }
 

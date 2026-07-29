@@ -36,6 +36,25 @@ Consult the SocketCAN documentation for details on configuring such devices.
 
 QT also includes a "virtualcan" device type. You can use this to create a bus that will loop back anything you send to it. This is useful for testing without needing to connect any devices or load any log files.
 
+Connecting to gs_usb Devices (Windows)
+======================================
+
+gs_usb is the USB protocol spoken by candleLight, CANable (candleLight firmware), CANnectivity,
+cantact and similar open hardware adapters. On LINUX and macOS these devices are handled by the
+kernel gs_usb driver and show up as ordinary SocketCAN interfaces, so use the "QT SerialBus
+Devices" option there. Windows has no such driver, which is why SavvyCAN talks to them directly
+over WinUSB.
+
+Select "gs_usb", pick your device from the list, choose a bus speed and, for FD capable hardware,
+tick CAN FD and pick a data rate. Multi channel adapters appear as a single connection with one
+SavvyCAN bus per channel, each of which can be configured separately once the connection exists.
+
+The device interface has to be bound to WinUSB. Recent candleLight and CANnectivity firmware
+declares this itself through WCID descriptors, so Windows installs the driver automatically when
+the adapter is first plugged in. Older firmware may need the WinUSB driver assigned manually with
+a tool such as Zadig. If the device does not show up in the list, that binding is the first thing
+to check.
+
 Connecting to Socketcand
 ========================
 

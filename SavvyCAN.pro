@@ -250,6 +250,32 @@ win32-g++ {
    LIBS += libopengl32
 }
 
+# gs_usb (candleLight / CANable / CANnectivity) support.
+# Windows only - everywhere else these devices are driven by the kernel gs_usb module and
+# show up as regular SocketCAN interfaces.
+# connections/candle_api is LGPL-3.0, see connections/candle_api/README.md.
+win32 {
+   SOURCES += connections/gs_usb.cpp \
+       connections/candle_api/candle.c \
+       connections/candle_api/candle_ctrl_req.c
+
+   HEADERS += connections/gs_usb.h \
+       connections/candle_api/candle.h \
+       connections/candle_api/candle_ctrl_req.h \
+       connections/candle_api/candle_defs.h \
+       connections/candle_api/ch_9.h
+
+   #lower case names so this also links with a case sensitive MinGW cross toolchain
+   LIBS += -lsetupapi -lole32 -lwinusb
+
+   # the candle API calls the TCHAR flavour of the setupapi/strsafe functions with wide strings
+   DEFINES += UNICODE _UNICODE
+}
+
+# the candle API is C99/C11, the rest of the project is C++ only so this affects nothing else
+win32-g++:QMAKE_CFLAGS += -std=gnu11
+win32-msvc*:QMAKE_CFLAGS += /std:c11
+
 unix {
    isEmpty(PREFIX) {
       PREFIX=/usr/local
