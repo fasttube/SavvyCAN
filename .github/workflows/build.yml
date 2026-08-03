@@ -63,8 +63,11 @@ jobs:
         run: |
           mkdir -p SavvyCAN.app/Contents/MacOS/translations
           mkdir -p SavvyCAN.app/Contents/MacOS/help
+          mkdir -p SavvyCAN.app/Contents/Resources/licenses
           cp -R translations/*.qm SavvyCAN.app/Contents/MacOS/translations
           cp -R help/* SavvyCAN.app/Contents/MacOS/help
+          cp LICENSE SavvyCAN.app/Contents/Resources/licenses/SavvyCAN-MIT.txt
+          cp THIRD-PARTY.md licenses/GPL-3.0.txt licenses/LGPL-3.0.txt SavvyCAN.app/Contents/Resources/licenses/
           macdeployqt SavvyCAN.app -dmg
           mv SavvyCAN.dmg SavvyCAN_arm64.dmg
       
@@ -118,6 +121,11 @@ jobs:
           copy "${Env:Qt5_Dir}/plugins/styles/*.*" package/styles/
           mkdir package/canbus
           copy "${Env:Qt5_Dir}/plugins/canbus/*.*" package/canbus/
+          mkdir package/licenses
+          copy LICENSE package/licenses/SavvyCAN-MIT.txt
+          copy THIRD-PARTY.md package/licenses/
+          copy licenses/GPL-3.0.txt package/licenses/
+          copy licenses/LGPL-3.0.txt package/licenses/
 
       - uses: actions/upload-artifact@v4
         with:

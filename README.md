@@ -34,6 +34,22 @@ of this program. It can load and save in several formats:
 11. PCAN Viewer (Read Only)
 12. Wireshark socketcan PCAP file (Read only)
 
+## Licensing
+
+SavvyCAN's own source is MIT licensed, see `LICENSE`. It bundles and links
+third party code under other licenses, some of it copyleft, so a distributed
+binary carries obligations beyond the MIT terms. `THIRD-PARTY.md` has the full
+inventory. In short:
+
+- **QCustomPlot** (`qcustomplot.{h,cpp}`), GPL-3.0-or-later, compiled in on every
+  platform. This is what sets the terms of the resulting binary.
+- **Qt 5**, LGPL-3.0 as used by the official and CI builds, linked dynamically.
+- **candle API** (`connections/candle_api/`), LGPL-3.0-or-later, used by the
+  gs_usb connection type and only compiled into Windows builds.
+
+Complete corresponding source for any binary released from this repository is
+the repository itself.
+
 ## Dependencies
 
 Now this code does not depend on anything other than what is in the source tree or available

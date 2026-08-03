@@ -20,3 +20,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+------------------------------------------------------------------------------
+
+The MIT terms above apply to the SavvyCAN source code itself. Parts of this
+repository are third party code under other licenses, and SavvyCAN links
+against third party libraries under other licenses. Some of those are copyleft,
+which means the terms of a built and distributed SavvyCAN binary are not the
+MIT terms alone.
+
+See THIRD-PARTY.md for the inventory, and the license files it points at.
+

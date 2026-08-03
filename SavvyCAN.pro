@@ -304,6 +304,13 @@ helpfiles.files=help/*
 helpfiles.path = $$PREFIX/bin/help
 INSTALLS += helpfiles
 
+# MIT requires the notice to travel with every copy, and QCustomPlot (GPL-3.0) is
+# linked in on every platform, so these ship with the binary rather than only living
+# in the repository. See THIRD-PARTY.md.
+licensefiles.files = LICENSE THIRD-PARTY.md licenses/GPL-3.0.txt licenses/LGPL-3.0.txt
+licensefiles.path = $$PREFIX/share/savvycan/licenses
+INSTALLS += licensefiles
+
 INSTALLS += target
 
 TRANSLATIONS += \
