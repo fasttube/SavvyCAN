@@ -1475,34 +1475,34 @@ bool DBCFile::saveFile(QString fileName)
     outFile->write("\n");
     outFile->write("\n");
     outFile->write("NS_ :\n");
-    outFile->write("    NS_DESC_\n");
-    outFile->write("    CM_\n");
-    outFile->write("    BA_DEF_\n");
-    outFile->write("    BA_\n");
-    outFile->write("    VAL_\n");
-    outFile->write("    CAT_DEF_\n");
-    outFile->write("    CAT_\n");
-    outFile->write("    FILTER\n");
-    outFile->write("    BA_DEF_DEF_\n");
-    outFile->write("    EV_DATA_\n");
-    outFile->write("    ENVVAR_DATA_\n");
-    outFile->write("    SGTYPE_\n");
-    outFile->write("    SGTYPE_VAL_\n");
-    outFile->write("    BA_DEF_SGTYPE_\n");
-    outFile->write("    BA_SGTYPE_\n");
-    outFile->write("    SIG_TYPE_REF_\n");
-    outFile->write("    VAL_TABLE_\n");
-    outFile->write("    SIG_GROUP_\n");
-    outFile->write("    SIG_VALTYPE_\n");
-    outFile->write("    SIGTYPE_VALTYPE_\n");
-    outFile->write("    BO_TX_BU_\n");
-    outFile->write("    BA_DEF_REL_\n");
-    outFile->write("    BA_REL_\n");
-    outFile->write("    BA_DEF_DEF_REL_\n");
-    outFile->write("    BU_SG_REL_\n");
-    outFile->write("    BU_EV_REL_\n");
-    outFile->write("    BU_BO_REL_\n");
-    outFile->write("    SG_MUL_VAL_\n");
+    outFile->write("\tNS_DESC_\n");
+    outFile->write("\tCM_\n");
+    outFile->write("\tBA_DEF_\n");
+    outFile->write("\tBA_\n");
+    outFile->write("\tVAL_\n");
+    outFile->write("\tCAT_DEF_\n");
+    outFile->write("\tCAT_\n");
+    outFile->write("\tFILTER\n");
+    outFile->write("\tBA_DEF_DEF_\n");
+    outFile->write("\tEV_DATA_\n");
+    outFile->write("\tENVVAR_DATA_\n");
+    outFile->write("\tSGTYPE_\n");
+    outFile->write("\tSGTYPE_VAL_\n");
+    outFile->write("\tBA_DEF_SGTYPE_\n");
+    outFile->write("\tBA_SGTYPE_\n");
+    outFile->write("\tSIG_TYPE_REF_\n");
+    outFile->write("\tVAL_TABLE_\n");
+    outFile->write("\tSIG_GROUP_\n");
+    outFile->write("\tSIG_VALTYPE_\n");
+    outFile->write("\tSIGTYPE_VALTYPE_\n");
+    outFile->write("\tBO_TX_BU_\n");
+    outFile->write("\tBA_DEF_REL_\n");
+    outFile->write("\tBA_REL_\n");
+    outFile->write("\tBA_DEF_DEF_REL_\n");
+    outFile->write("\tBU_SG_REL_\n");
+    outFile->write("\tBU_EV_REL_\n");
+    outFile->write("\tBU_BO_REL_\n");
+    outFile->write("\tSG_MUL_VAL_\n");
     outFile->write("\n");
     outFile->write("BS_: \n");
 
@@ -1617,7 +1617,7 @@ bool DBCFile::saveFile(QString fileName)
                 sigNumber++;
             }
 
-            msgOutput.append("   SG_ " + sig->name);
+            msgOutput.append("\tSG_ " + sig->name);
 
             if (sig->isMultiplexed)
             {
