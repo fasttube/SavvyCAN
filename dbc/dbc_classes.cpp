@@ -2,6 +2,40 @@
 #include "dbchandler.h"
 #include "utility.h"
 #include <QtMath>
+#include <cstring>
+
+namespace {
+
+bool decodeFloatingPointSignal(const DBC_SIGNAL &signal, const CANFrame &frame,
+                               int64_t &rawValue, double &value)
+{
+    const QByteArray payload = frame.payload();
+    const int width = signal.valType == SP_FLOAT ? 32 : 64;
+    if (signal.startBit < 0 || signal.startBit >= 512) return false;
+
+    // Motorola start bits name the MSB; convert to a linear position for the length check.
+    const int firstBit = signal.intelByteOrder ? signal.startBit
+        : (signal.startBit / 8) * 8 + 7 - (signal.startBit % 8);
+    if (firstBit + width > 512 || firstBit + width > payload.size() * 8) return false;
+
+    rawValue = Utility::processIntegerSignal(payload, signal.startBit, width,
+                                            signal.intelByteOrder, false);
+    if (signal.valType == SP_FLOAT)
+    {
+        const uint32_t bits = static_cast<uint32_t>(rawValue);
+        float decoded;
+        std::memcpy(&decoded, &bits, sizeof(decoded));
+        value = decoded;
+    }
+    else
+    {
+        std::memcpy(&value, &rawValue, sizeof(value));
+    }
+    value = value * signal.factor + signal.bias;
+    return true;
+}
+
+} // namespace
 
 DBC_MESSAGE::DBC_MESSAGE()
 {
@@ -253,27 +287,9 @@ bool DBC_SIGNAL::processAsText(const CANFrame &frame, QString &outString, bool o
         // if factor is an integer, we don't need the possibly human-unreadable float representation
         isInteger = (factor == qFloor(factor));
     }
-    else if (valType == SP_FLOAT)
+    else
     {
-        //The theory here is that we force the integer signal code to treat this as
-        //a 32 bit unsigned integer. This integer is then cast into a float in such a way
-        //that the bytes that make up the integer are instead treated as having made up
-        //a 32 bit single precision float. That's evil incarnate but it is very fast and small
-        //in terms of new code.
-        result = Utility::processIntegerSignal(frame.payload(), startBit, 32, intelByteOrder, false);
-        endResult = (*((float *)(&result)) * factor) + bias; //look away! This is awful. I don't even know for sure if it works. Should test that.
-    }
-    else //double precision float
-    {
-        if ( frame.payload().length() < 8 )
-        {
-            result = 0;
-            return false;
-        }
-        //like the above, this is rotten and evil and wrong in so many ways. Force
-        //calculation of a 64 bit integer and then cast it into a double.
-        result = Utility::processIntegerSignal(frame.payload(), startBit, 64, intelByteOrder, false);
-        endResult = (*((double *)(&result)) * factor) + bias;
+        if (!decodeFloatingPointSignal(*this, frame, result, endResult)) return false;
     }
 
     outString = makePrettyOutput(endResult, result, outputName, isInteger, outputUnit);
@@ -389,33 +405,9 @@ bool DBC_SIGNAL::processAsDouble(const CANFrame &frame, double &outValue)
         endResult = ((double)result * factor) + bias;
         result = (int64_t)endResult;
     }
-    /*TODO: It should be noted that the below floating point has not even been tested. For shame! Test it!*/
-    else if (valType == SP_FLOAT)
+    else
     {
-        if ( frame.payload().length() * 8 < (startBit + 32) )
-        {
-            result = 0;
-            return false;
-        }
-        //The theory here is that we force the integer signal code to treat this as
-        //a 32 bit unsigned integer. This integer is then cast into a float in such a way
-        //that the bytes that make up the integer are instead treated as having made up
-        //a 32 bit single precision float. That's evil incarnate but it is very fast and small
-        //in terms of new code.
-        result = Utility::processIntegerSignal(frame.payload(), startBit, 32, false, false);
-        endResult = (*((float *)(&result)) * factor) + bias;
-    }
-    else //double precision float
-    {
-        if ( frame.payload().length() < 8 )
-        {
-            result = 0;
-            return false;
-        }
-        //like the above, this is rotten and evil and wrong in so many ways. Force
-        //calculation of a 64 bit integer and then cast it into a double.
-        result = Utility::processIntegerSignal(frame.payload(), startBit, 64, false, false);
-        endResult = (*((double *)(&result)) * factor) + bias;
+        if (!decodeFloatingPointSignal(*this, frame, result, endResult)) return false;
     }
     cachedValue = endResult;
     outValue = endResult;
